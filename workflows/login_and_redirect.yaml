@@ -1,0 +1,142 @@
+name: login_and_redirect
+description: Login to Xero HQ and select the specified client
+version: "2.2"
+config:
+  base_url: https://hq.xero.com
+
+steps:
+  - id: navigate_to_xero_hq
+    action: goto
+    url: https://hq.xero.com
+    wait_until: domcontentloaded
+    timeout: 30000
+    wait_after: 500
+
+  - id: wait_for_page_stable
+    action: wait_for_selector
+    description: Wait for page to stabilize after redirects
+    selectors:
+      - "input[placeholder='Email address']"
+      - "input[name='Username']"
+      - "#xl-form-email"
+      - "input[placeholder='Search clients']"
+      - "button:has-text('Go to Xero')"
+    timeout: 15000
+
+  - id: check_login_required
+    action: check_url
+    conditions:
+      - contains: login.xero.com
+        goto_step: enter_email
+      - contains: identity.xero.com
+        goto_step: enter_email
+      - contains: /login
+        goto_step: enter_email
+      - contains: two-factor
+        goto_step: handle_2fa
+      - contains: authenticator
+        goto_step: handle_2fa
+    default_step: wait_for_client_list
+
+  - id: enter_email
+    action: fill
+    selectors:
+      - "input[placeholder='Email address']"
+      - "input[name='Username']"
+      - "#xl-form-email"
+    value: "${XERO_EMAIL}"
+    wait_visible: true
+    timeout: 10000
+
+  - id: enter_password
+    action: fill
+    selectors:
+      - "input[placeholder='Password']"
+      - "input[name='Password']"
+      - "#xl-form-password"
+    value: "${XERO_PASSWORD}"
+    wait_visible: true
+    timeout: 5000
+
+  - id: click_login
+    action: click
+    selectors:
+      - "button:has-text('Log in')"
+      - "#xl-form-submit"
+    wait_after: 500
+
+  - id: post_login_redirect
+    action: wait_for_url
+    patterns:
+      - "**/hq.xero.com/**"
+      - "**/go.xero.com/**"
+    timeout: 20000
+    on_timeout: check_2fa
+    optional: true
+
+  - id: check_2fa
+    action: check_url
+    conditions:
+      - contains: two-factor
+        goto_step: handle_2fa
+      - contains: authenticator
+        goto_step: handle_2fa
+      - contains: mfa
+        goto_step: handle_2fa
+    default_step: wait_for_client_list
+
+  - id: handle_2fa
+    action: manual_intervention
+    message: 2FA required - please complete verification in browser
+    wait_for_url: "**/hq.xero.com/**"
+    timeout: 120000
+
+  - id: wait_for_client_list
+    action: wait_for_selector
+    description: Waiting for client list to load
+    selectors:
+      - "input[placeholder='Search clients']"
+      - "button:has-text('Go to Xero')"
+    timeout: 20000
+    optional: false
+
+  - id: search_for_client
+    action: fill
+    description: "Searching for client: ${selected_client}"
+    selectors:
+      - "input[placeholder='Search clients']"
+    value: "${selected_client}"
+    wait_visible: true
+    timeout: 5000
+    wait_after: 2000
+    optional: false
+
+  - id: wait_for_search_results
+    action: wait_for_selector
+    description: Waiting for Go to Xero button to appear
+    selectors:
+      - "[data-automationid='go-to-xero-button']"
+      - "a:has-text('Go to Xero')"
+    timeout: 10000
+
+  - id: select_client
+    action: click
+    description: "Clicking Go to Xero for client"
+    selectors:
+      - "tr:has-text('${selected_client}') [data-automationid='go-to-xero-button']"
+      - "[data-automationid='go-to-xero-button']"
+      - "a:has-text('Go to Xero')"
+    wait_visible: true
+    timeout: 5000
+
+  - id: wait_for_client_dashboard
+    action: wait_for_url
+    patterns:
+      - "**/go.xero.com/**"
+    timeout: 15000
+
+  - id: verify_dashboard
+    action: capture_state
+    save:
+      url: dashboard_url
+      company_name: selected_client

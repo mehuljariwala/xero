@@ -1,0 +1,185 @@
+name: profit_and_loss
+description: Generate Profit and Loss report with comparison and export to Excel
+version: "3.0"
+requires_login: true
+starts_from: reports_page
+
+steps:
+  - id: wait_for_reports_ready
+    action: wait_for_selector
+    description: Wait for reports page search to be ready
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    timeout: 10000
+
+  - id: search_profit_and_loss
+    action: fill
+    description: Search for Profit and Loss report
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    value: Profit and Loss
+    wait_visible: true
+    timeout: 5000
+    wait_after: 100
+
+  - id: wait_for_search_dropdown
+    action: wait_for_selector
+    description: Wait for search results dropdown to appear
+    selectors:
+      - "listbox"
+      - "[role='listbox']"
+    timeout: 2000
+
+  - id: click_profit_and_loss_report
+    action: click
+    description: Click on Profit and Loss report from search results
+    selectors:
+      - "listbox button:has-text('Profit and Loss')"
+      - "[role='listbox'] button:has-text('Profit and Loss')"
+    wait_after: 500
+
+  - id: wait_for_report_page
+    action: wait_for_selector
+    description: Wait for report page to load
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    timeout: 10000
+
+  - id: click_date_dropdown
+    action: click
+    description: Click date dropdown to select period
+    selectors:
+      - "[data-automationid='report-settings-convenience-date-dropdown-button']"
+      - "button[aria-label='List of convenience dates']"
+      - ".date-selector-convenience-date-dropdown-button"
+    wait_after: 800
+
+  - id: wait_for_last_financial_year_option
+    action: wait_for_selector
+    description: Wait for Last financial year option to be visible
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    timeout: 5000
+
+  - id: select_last_financial_year
+    action: click
+    description: Select 'Last financial year' from dropdown
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    wait_after: 500
+
+  - id: click_comparison_dropdown
+    action: click
+    description: Open comparison period dropdown
+    selectors:
+      - "[data-automationid='report-settings-comparison-period-button']"
+      - "#report-settings-comparison-period-button"
+      - "button:has-text('Compare with')"
+    wait_after: 200
+
+  - id: select_compare_1_year
+    action: click
+    description: Select 'Compare with 1 year' option
+    selectors:
+      - "button:has-text('1 year')"
+      - "[role='option']:has-text('1 year')"
+      - "li:has-text('1 year')"
+    wait_after: 200
+
+  - id: click_more_button
+    action: click
+    description: Open More options dropdown
+    selectors:
+      - "[data-automationid='report-settings-advanced-button']"
+      - "button:has-text('More')"
+    wait_after: 300
+
+  - id: wait_for_more_dropdown
+    action: wait_for_selector
+    description: Wait for More dropdown to appear
+    selectors:
+      - "[role='listbox']"
+      - ".xui-dropdown--body"
+    timeout: 5000
+
+  - id: ensure_accrual_basis
+    action: click
+    description: Ensure Accrual accounting basis is selected
+    selectors:
+      - "#report-settings-accrualbasis-accrual"
+      - "[role='option']:has-text('Accrual')"
+    wait_after: 100
+    optional: true
+
+  - id: set_options
+    action: batch_ensure_checked
+    description: Set all report options in one batch operation
+    checkboxes:
+      - selectors: ["[data-automationid='report-settings-isaccountcodeandname-checkbox--input']", "role=checkbox[name='Account codes']"]
+        checked: true
+      - selectors: ["[data-automationid='report-settings-showdecimals-checkbox--input']", "role=checkbox[name='Decimals']"]
+        checked: true
+      - selectors: ["[data-automationid='report-settings-includezerobalanceaccounts-checkbox--input']", "role=checkbox[name='Zero balance or activity']"]
+        checked: false
+      - selectors: ["[data-automationid='report-settings-showaccountingbasis-checkbox--input']", "role=checkbox[name='Accounting basis']"]
+        checked: false
+      - selectors: ["[data-automationid='report-settings-showpercentageof-checkbox--input']", "role=checkbox[name='Percentage of turnover']"]
+        checked: false
+      - selectors: ["[data-automationid='report-settings-showtotalcolumn-checkbox--input']", "role=checkbox[name='Total']"]
+        checked: false
+      - selectors: ["[data-automationid='report-settings-showyeartodatecolumn-checkbox--input']", "role=checkbox[name='Year to date']"]
+        checked: false
+    wait_after: 100
+
+  - id: click_update_button
+    action: click
+    description: Click Update button to refresh report
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    wait_after: 500
+
+  - id: wait_for_report_data
+    action: wait_for_selector
+    description: Wait for report to load
+    selectors:
+      - "status:has-text('Report has finished loading')"
+      - ".report-body"
+      - "table"
+    timeout: 10000
+
+  - id: validate_before_export
+    action: validate_filters
+    description: Validate all filters are correctly set before export
+    fail_on_error: false
+
+  - id: click_export_button
+    action: click
+    description: Click Export button
+    selectors:
+      - "button:has-text('Export')"
+      - "[data-testid='export-button']"
+    wait_after: 500
+
+  - id: wait_for_export_menu
+    action: wait_for_selector
+    description: Wait for export menu to appear
+    selectors:
+      - "button:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 5000
+
+  - id: click_excel_and_download
+    action: click_and_download
+    description: Click Excel and download the file
+    selectors:
+      - "button:has-text('Excel')"
+      - "a:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 30000
+    save_to: downloads/

@@ -1,0 +1,60 @@
+name: navigate_to_reports
+description: Navigate from dashboard to All Reports page via direct URL
+version: "3.4"
+requires_login: true
+
+steps:
+  - id: extract_org_id
+    action: execute_script
+    description: Extract organization ID from current URL
+    script: |
+      (() => {
+        const url = window.location.href;
+        const patterns = [
+          /reporting\.xero\.com\/([^\/]+)/,
+          /go\.xero\.com\/[^\/]+\/(!?[a-zA-Z0-9_-]+)/,
+          /go\.xero\.com\/app\/([^\/]+)/,
+          /xero\.com\/[^\/]+\/(!?[a-zA-Z0-9_-]+)/
+        ];
+        for (const pattern of patterns) {
+          const match = url.match(pattern);
+          if (match && match[1] && match[1].length > 3) return match[1];
+        }
+        return null;
+      })()
+    save_to: org_id
+
+  - id: navigate_to_reports_page
+    action: goto
+    description: Navigate directly to reports page
+    url: "https://reporting.xero.com/${org_id}/home"
+    wait_until: load
+    timeout: 30000
+    wait_after: 2000
+
+  - id: verify_on_reports_page
+    action: execute_script
+    description: Verify we're on the reports page
+    script: |
+      (() => {
+        const url = window.location.href;
+        console.log('Current URL after navigation:', url);
+        return url;
+      })()
+    save_to: current_url_after_nav
+
+  - id: wait_for_page_ready
+    action: wait_for_selector
+    description: Wait for reports page to fully load
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder*='report' i]"
+      - ".xui-pageheading"
+      - "h1"
+    timeout: 10000
+    optional: true
+
+  - id: capture_navigation_complete
+    action: capture_state
+    save:
+      url: reports_page_url

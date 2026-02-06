@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xero Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deepest: #f8fafc;
+      --bg-deep: #ffffff;
+      --bg-card: #f1f5f9;
+      --bg-card-hover: #e2e8f0;
+      --bg-elevated: #cbd5e1;
+
+      --border-subtle: rgba(100, 116, 139, 0.15);
+      --border-medium: rgba(100, 116, 139, 0.25);
+
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+
+      --accent-emerald: #059669;
+      --accent-emerald-dim: rgba(5, 150, 105, 0.12);
+      --accent-amber: #d97706;
+      --accent-amber-dim: rgba(217, 119, 6, 0.12);
+      --accent-rose: #dc2626;
+      --accent-rose-dim: rgba(220, 38, 38, 0.1);
+      --accent-sky: #0284c7;
+      --accent-sky-dim: rgba(2, 132, 199, 0.1);
+      --accent-violet: #7c3aed;
+      --accent-violet-dim: rgba(124, 58, 237, 0.1);
+
+      --glass: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(100, 116, 139, 0.1);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      --shadow-glow: 0 0 60px rgba(5, 150, 105, 0.08);
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-deepest);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(5, 150, 105, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(5, 150, 105, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Gradient orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(5, 150, 105, 0.12) 0%, transparent 70%);
+      top: -200px;
+      left: -200px;
+    }
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+      bottom: -150px;
+      right: -150px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--accent-emerald), #059669);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .brand-icon svg {
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+
+    .brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 100px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .status-pill.running {
+      background: var(--accent-emerald-dim);
+      border-color: var(--accent-emerald);
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-indicator.active {
+      background: var(--accent-emerald);
+      box-shadow: 0 0 12px var(--accent-emerald);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    /* Main Layout - 3 Panels */
+    .main {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      gap: 1px;
+      background: var(--border-subtle);
+      overflow: hidden;
+    }
+
+    .panel {
+      background: var(--bg-deep);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .panel-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .panel-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .panel-content::-webkit-scrollbar-thumb {
+      background: var(--bg-elevated);
+      border-radius: 3px;
+    }
+
+    /* Left Panel - Clients */
+    .upload-zone {
+      border: 2px dashed var(--border-medium);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 16px;
+      background: var(--bg-card);
+    }
+
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--accent-emerald);
+      background: var(--accent-emerald-dim);
+    }
+
+    .upload-zone svg {
+      width: 40px;
+      height: 40px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .upload-zone h4 {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .upload-zone p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .upload-zone input {
+      display: none;
+    }
+
+    .file-loaded {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--accent-emerald-dim);
+      border: 1px solid var(--accent-emerald);
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+    }
+
+    .file-loaded svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent-emerald);
+    }
+
+    .file-loaded span {
+      flex: 1;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .file-loaded button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .file-loaded button:hover {
+      color: var(--accent-rose);
+    }
+
+    .client-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .client-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .client-item:hover {
+      border-color: var(--border-medium);
+    }
+
+    .client-item.selected {
+      border-color: var(--accent-emerald);
+      background: var(--accent-emerald-dim);
+    }
+
+    .client-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+
+    .client-checkbox {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-medium);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .client-checkbox:checked {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+    }
+
+    .client-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 4px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .client-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-sky));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      color: white;
+    }
+
+    .client-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .client-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .client-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .client-expand {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .client-expand.expanded {
+      transform: rotate(180deg);
+    }
+
+    .client-reports {
+      display: none;
+      padding: 0 16px 14px;
+      gap: 6px;
+      flex-direction: column;
+    }
+
+    .client-reports.visible {
+      display: flex;
+    }
+
+    .report-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-deep);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .report-item:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .report-item input {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border-medium);
+      border-radius: 3px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .report-item input:checked {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+    }
+
+    .report-item input:checked::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 4px;
+      width: 3px;
+      height: 6px;
+      border: solid white;
+      border-width: 0 1.5px 1.5px 0;
+      transform: rotate(45deg);
+    }
+
+    /* Action Buttons */
+    .action-bar {
+      padding: 16px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-deep);
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-emerald), #059669);
+      color: white;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-danger {
+      background: var(--accent-rose);
+      color: white;
+    }
+
+    .btn-danger:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Middle Panel Layout */
+    .middle-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    .browser-section {
+      flex: 1;
+      min-height: 0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .activity-section {
+      height: 220px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .section-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .section-title svg {
+      color: var(--accent-emerald);
+    }
+
+    .activity-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+    }
+
+    .activity-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .activity-content::-webkit-scrollbar-thumb {
+      background: var(--bg-elevated);
+      border-radius: 2px;
+    }
+
+    /* Activity Feed */
+    .activity-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .activity-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .empty-state {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      width: 24px;
+      height: 24px;
+      opacity: 0.5;
+    }
+
+    .empty-state span {
+      font-size: 0.85rem;
+    }
+
+    .activity-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      gap: 10px;
+      animation: slideIn 0.2s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .activity-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-icon.info {
+      background: var(--accent-sky-dim);
+      color: var(--accent-sky);
+    }
+
+    .activity-icon.success {
+      background: var(--accent-emerald-dim);
+      color: var(--accent-emerald);
+    }
+
+    .activity-icon.warning {
+      background: var(--accent-amber-dim);
+      color: var(--accent-amber);
+    }
+
+    .activity-icon.error {
+      background: var(--accent-rose-dim);
+      color: var(--accent-rose);
+    }
+
+    .activity-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .activity-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .activity-message {
+      font-size: 0.8rem;
+      font-weight: 500;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .activity-time {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 0;
+    }
+
+    .activity-details {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-deep);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Browser Preview */
+    .browser-preview {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .browser-chrome {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: linear-gradient(to bottom, var(--bg-card), var(--bg-card-hover));
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .browser-dot.red { background: #ff5f57; }
+    .browser-dot.yellow { background: #febc2e; }
+    .browser-dot.green { background: #28c840; }
+
+    .browser-url {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .live-indicator {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--accent-rose);
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: white;
+    }
+
+    .live-indicator.active {
+      display: flex;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .browser-body {
+      flex: 1;
+      min-height: 200px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .browser-frame {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+
+    .browser-placeholder {
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .placeholder-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .browser-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .browser-icon-wrapper svg {
+      width: 36px;
+      height: 36px;
+      color: var(--text-muted);
+    }
+
+    .browser-placeholder p {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .placeholder-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .browser-loading {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .browser-loading p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--bg-elevated);
+      border-top-color: var(--accent-emerald);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .fullscreen-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .fullscreen-btn:hover {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+      color: white;
+    }
+
+    .fullscreen-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Right Panel - Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab:hover {
+      color: var(--text-secondary);
+    }
+
+    .tab.active {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+    }
+
+    .tab-content {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Timeline Tab */
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-subtle);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 20px;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -24px;
+      top: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--border-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timeline-dot.completed {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+    }
+
+    .timeline-dot.running {
+      background: var(--accent-amber);
+      border-color: var(--accent-amber);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .timeline-dot.pending {
+      background: var(--bg-card);
+      border-color: var(--border-medium);
+    }
+
+    .timeline-dot.error {
+      background: var(--accent-rose);
+      border-color: var(--accent-rose);
+    }
+
+    .timeline-dot svg {
+      width: 10px;
+      height: 10px;
+      color: white;
+    }
+
+    .timeline-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .timeline-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .timeline-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .timeline-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .timeline-empty svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    /* Memory Tab */
+    .memory-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .memory-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .memory-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-violet-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .memory-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .memory-key {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .memory-value {
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .memory-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    /* Downloads Tab */
+    .downloads-path {
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 12px;
+    }
+
+    .downloads-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .download-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .download-item:hover {
+      border-color: var(--border-medium);
+    }
+
+    .download-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .download-icon.file {
+      background: var(--accent-sky-dim);
+      color: var(--accent-sky);
+    }
+
+    .download-icon.folder {
+      background: var(--accent-amber-dim);
+      color: var(--accent-amber);
+    }
+
+    .download-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .download-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .download-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .download-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .download-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .download-item:hover .download-actions {
+      opacity: 1;
+    }
+
+    .action-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: var(--accent-emerald);
+      color: white;
+    }
+
+    .action-btn.delete:hover {
+      background: var(--accent-rose);
+    }
+
+    .action-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .downloads-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    /* Fullscreen overlay */
+    .fullscreen-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 1000;
+    }
+
+    .fullscreen-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fullscreen-overlay img {
+      max-width: 95%;
+      max-height: 95%;
+      object-fit: contain;
+    }
+
+    .fullscreen-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fullscreen-close svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Progress bar in header */
+    .progress-ring {
+      width: 36px;
+      height: 36px;
+    }
+
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 3;
+    }
+
+    .progress-ring .bg {
+      stroke: var(--bg-card);
+    }
+
+    .progress-ring .progress {
+      stroke: var(--accent-emerald);
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
+    <button class="fullscreen-close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <img id="fullscreenImage" src="" alt="Browser View">
+  </div>
+
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Xero Command Center</h1>
+          <span>Workflow Automation</span>
+        </div>
+      </div>
+      <div class="header-status">
+        <svg class="progress-ring" id="progressRing" style="display: none;">
+          <circle class="bg" cx="18" cy="18" r="15"></circle>
+          <circle class="progress" cx="18" cy="18" r="15" stroke-dasharray="94.2" stroke-dashoffset="94.2"></circle>
+        </svg>
+        <div class="status-pill" id="statusPill">
+          <div class="status-indicator" id="statusIndicator"></div>
+          <span id="statusText">Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Left Panel - Clients -->
+      <div class="panel" id="leftPanel">
+        <div class="panel-header">
+          <span class="panel-title">Clients</span>
+          <button class="action-btn" onclick="selectAllClients()" title="Select All">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 11 12 14 22 4"></polyline>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="panel-content">
+          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileUpload(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h4>Upload Client List</h4>
+            <p>Excel or CSV with client names</p>
+          </div>
+
+          <div class="file-loaded" id="fileLoaded" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span id="fileName">clients.xlsx</span>
+            <button onclick="removeFile()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="client-list" id="clientList">
+            <div class="upload-prompt" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+              <p style="font-size: 0.85rem;">Upload an Excel file to load clients</p>
+            </div>
+          </div>
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-primary" id="startBtn" onclick="startWorkflow()" disabled>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Start Processing
+          </button>
+          <button class="btn btn-danger" id="stopBtn" onclick="stopWorkflow()" disabled>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            </svg>
+            Stop
+          </button>
+        </div>
+      </div>
+
+      <!-- Middle Panel - Browser & Activity -->
+      <div class="panel middle-panel">
+        <!-- Browser Preview Section (Top) -->
+        <div class="browser-section">
+          <div class="browser-preview" id="browserPreview">
+            <div class="browser-chrome">
+              <div class="browser-dots">
+                <div class="browser-dot red"></div>
+                <div class="browser-dot yellow"></div>
+                <div class="browser-dot green"></div>
+              </div>
+              <div class="browser-url" id="browserUrl">Ready to connect...</div>
+              <div class="live-indicator" id="liveIndicator">
+                <div class="live-dot"></div>
+                LIVE
+              </div>
+              <button class="fullscreen-btn" onclick="openFullscreen()" title="Fullscreen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <polyline points="9 21 3 21 3 15"></polyline>
+                  <line x1="21" y1="3" x2="14" y2="10"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="browser-body">
+              <img class="browser-frame" id="browserFrame" alt="Browser View">
+              <div class="browser-placeholder" id="browserPlaceholder">
+                <div class="placeholder-content">
+                  <div class="browser-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                  <p>Browser preview will appear here</p>
+                  <span class="placeholder-hint">Start processing to see live view</span>
+                </div>
+              </div>
+              <div class="browser-loading" id="browserLoading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Launching browser...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Log Section (Bottom) -->
+        <div class="activity-section">
+          <div class="section-header">
+            <span class="section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+              Activity Log
+            </span>
+            <button class="action-btn" onclick="clearActivity()" title="Clear">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="activity-content" id="activityPanel">
+            <div class="activity-empty" id="activityEmpty">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <span>Waiting for activity...</span>
+              </div>
+            </div>
+            <div class="activity-feed" id="activityFeed" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Tabs -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('timeline')">Timeline</button>
+            <button class="tab" onclick="switchTab('memory')">Memory</button>
+            <button class="tab" onclick="switchTab('downloads')">Downloads</button>
+          </div>
+        </div>
+        <div class="panel-content">
+          <!-- Timeline Tab -->
+          <div class="tab-content active" id="timelineTab">
+            <div class="timeline-empty" id="timelineEmpty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <p>Workflow stages will appear here</p>
+            </div>
+            <div class="timeline" id="timeline" style="display: none;"></div>
+          </div>
+
+          <!-- Memory Tab -->
+          <div class="tab-content" id="memoryTab">
+            <div class="memory-empty" id="memoryEmpty">
+              <p>No captured variables yet</p>
+            </div>
+            <div class="memory-list" id="memoryList" style="display: none;"></div>
+          </div>
+
+          <!-- Downloads Tab -->
+          <div class="tab-content" id="downloadsTab">
+            <div class="downloads-path" id="downloadsPath">/downloads</div>
+            <div class="downloads-list" id="downloadsList">
+              <div class="downloads-empty">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    let ws = null;
+    let isRunning = false;
+    let clients = [];
+    let currentDownloadPath = '';
+    let timelineStages = [];
+
+    const availableReports = [
+      { id: 'trial_balance_report', name: 'Trial Balance' },
+      { id: 'profit_and_loss', name: 'Profit & Loss' },
+      { id: 'aged_receivables_detail', name: 'Aged Receivables' },
+      { id: 'aged_payables_detail', name: 'Aged Payables' },
+      { id: 'account_transactions', name: 'Account Transactions' },
+      { id: 'receivable_invoice_detail', name: 'Receivable Invoices' },
+      { id: 'payable_invoice_detail', name: 'Payable Invoices' },
+      { id: 'vat_returns', name: 'VAT Returns' }
+    ];
+
+    // WebSocket Connection
+    function connect() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+
+      ws.onopen = () => {
+        console.log('Connected');
+        loadDownloads();
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        handleMessage(data);
+      };
+
+      ws.onclose = () => {
+        console.log('Disconnected, reconnecting...');
+        setTimeout(connect, 2000);
+      };
+    }
+
+    function handleMessage(data) {
+      if (data.type === 'log') {
+        addActivityCard(data);
+
+        // Update timeline when workflow completes or fails
+        if (data.level === 'success' && data.message.startsWith('Completed:')) {
+          const workflowName = data.message.replace('Completed:', '').trim();
+          const stage = timelineStages.find(s => s.id === workflowName);
+          if (stage) {
+            stage.status = 'completed';
+            updateTimeline(timelineStages);
+          }
+        } else if (data.level === 'error' && timelineStages.length > 0) {
+          const runningStage = timelineStages.find(s => s.status === 'running');
+          if (runningStage) {
+            runningStage.status = 'error';
+            updateTimeline(timelineStages);
+          }
+        }
+      } else if (data.type === 'status') {
+        updateStatus(data);
+      } else if (data.type === 'frame') {
+        updateBrowserFrame(data.data);
+      } else if (data.type === 'variables') {
+        updateMemory(data.variables);
+      }
+    }
+
+    // File Upload
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+          // Extract client names from first column (skip header if present)
+          clients = jsonData
+            .slice(1)
+            .map(row => row[0])
+            .filter(name => name && typeof name === 'string' && name.trim());
+
+          if (clients.length === 0) {
+            clients = jsonData
+              .map(row => row[0])
+              .filter(name => name && typeof name === 'string' && name.trim());
+          }
+
+          renderClients();
+          document.getElementById('uploadZone').style.display = 'none';
+          document.getElementById('fileLoaded').style.display = 'flex';
+          document.getElementById('fileName').textContent = file.name;
+          document.getElementById('startBtn').disabled = false;
+        } catch (error) {
+          console.error('Failed to parse file:', error);
+          alert('Failed to parse file. Please upload a valid Excel or CSV file.');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function removeFile() {
+      clients = [];
+      document.getElementById('uploadZone').style.display = 'block';
+      document.getElementById('fileLoaded').style.display = 'none';
+      document.getElementById('fileInput').value = '';
+      document.getElementById('clientList').innerHTML = `
+        <div class="upload-prompt" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+          <p style="font-size: 0.85rem;">Upload an Excel file to load clients</p>
+        </div>
+      `;
+      document.getElementById('startBtn').disabled = true;
+    }
+
+    function renderClients() {
+      const list = document.getElementById('clientList');
+      list.innerHTML = clients.map((client, index) => {
+        const initials = client.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+        const colors = ['var(--accent-violet)', 'var(--accent-sky)', 'var(--accent-emerald)', 'var(--accent-amber)', 'var(--accent-rose)'];
+        const color = colors[index % colors.length];
+
+        return `
+          <div class="client-item" id="client-${index}">
+            <div class="client-header" onclick="toggleClient(${index})">
+              <input type="checkbox" class="client-checkbox" data-client="${client}" checked onclick="event.stopPropagation()">
+              <div class="client-avatar" style="background: linear-gradient(135deg, ${color}, ${color}88);">${initials}</div>
+              <div class="client-info">
+                <div class="client-name">${client}</div>
+                <div class="client-meta">${availableReports.length} reports available</div>
+              </div>
+              <div class="client-expand" id="expand-${index}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="client-reports" id="reports-${index}">
+              ${availableReports.map(report => `
+                <label class="report-item">
+                  <input type="checkbox" data-client="${client}" data-report="${report.id}" checked>
+                  <span>${report.name}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleClient(index) {
+      const expand = document.getElementById(`expand-${index}`);
+      const reports = document.getElementById(`reports-${index}`);
+      expand.classList.toggle('expanded');
+      reports.classList.toggle('visible');
+    }
+
+    function selectAllClients() {
+      const checkboxes = document.querySelectorAll('.client-checkbox, .report-item input');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      checkboxes.forEach(cb => cb.checked = !allChecked);
+    }
+
+    // Workflow Control
+    function getSelectedClients() {
+      return Array.from(document.querySelectorAll('.client-checkbox:checked'))
+        .map(cb => cb.dataset.client);
+    }
+
+    function getSelectedReports() {
+      return Array.from(document.querySelectorAll('.report-item input:checked'))
+        .map(cb => cb.dataset.report)
+        .filter((value, index, self) => self.indexOf(value) === index);
+    }
+
+    function startWorkflow() {
+      const selectedClients = getSelectedClients();
+      if (selectedClients.length === 0) {
+        alert('Please select at least one client');
+        return;
+      }
+
+      const selectedReports = getSelectedReports();
+
+      // Show loading state
+      showBrowserLoading();
+
+      // Build workflow list
+      const workflows = ['login_and_redirect', 'navigate_to_reports', ...selectedReports];
+
+      // Create timeline stages from actual workflows
+      const workflowDisplayNames = {
+        'login_and_redirect': 'Login & Select Client',
+        'navigate_to_reports': 'Navigate to Reports',
+        'trial_balance_report': 'Trial Balance',
+        'profit_and_loss': 'Profit & Loss',
+        'aged_receivables_detail': 'Aged Receivables',
+        'aged_payables_detail': 'Aged Payables',
+        'account_transactions': 'Account Transactions',
+        'receivable_invoice_detail': 'Receivable Invoices',
+        'payable_invoice_detail': 'Payable Invoices',
+        'vat_returns': 'VAT Returns',
+        'get_financial_year_end': 'Financial Year End'
+      };
+
+      timelineStages = workflows.map(w => ({
+        id: w,
+        name: workflowDisplayNames[w] || w.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        status: 'pending'
+      }));
+
+      updateTimeline(timelineStages);
+
+      // Send clients AND reports to backend
+      ws.send(JSON.stringify({
+        action: 'start',
+        clients: selectedClients,
+        reports: selectedReports,
+        workflows: workflows
+      }));
+    }
+
+    function showBrowserLoading() {
+      document.getElementById('browserPlaceholder').style.display = 'none';
+      document.getElementById('browserLoading').style.display = 'flex';
+      document.getElementById('browserUrl').textContent = 'Launching browser...';
+    }
+
+    function stopWorkflow() {
+      ws.send(JSON.stringify({ action: 'stop' }));
+    }
+
+    // Status Updates
+    function updateStatus(data) {
+      const pill = document.getElementById('statusPill');
+      const indicator = document.getElementById('statusIndicator');
+      const text = document.getElementById('statusText');
+      const startBtn = document.getElementById('startBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const progressRing = document.getElementById('progressRing');
+
+      if (data.status === 'running') {
+        isRunning = true;
+        pill.classList.add('running');
+        indicator.classList.add('active');
+        text.textContent = data.current_workflow ? `Running: ${data.current_workflow.replace(/_/g, ' ')}` : 'Running';
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        progressRing.style.display = 'block';
+
+        if (data.progress !== undefined && data.total) {
+          const percent = ((data.progress + 1) / data.total);
+          const circumference = 94.2;
+          const offset = circumference * (1 - percent);
+          progressRing.querySelector('.progress').style.strokeDashoffset = offset;
+        }
+
+        // Update timeline based on current workflow
+        if (data.current_workflow && timelineStages.length > 0) {
+          const currentIdx = timelineStages.findIndex(s => s.id === data.current_workflow);
+          if (currentIdx !== -1) {
+            timelineStages.forEach((stage, idx) => {
+              if (idx < currentIdx) {
+                stage.status = 'completed';
+              } else if (idx === currentIdx) {
+                stage.status = 'running';
+              } else {
+                stage.status = 'pending';
+              }
+            });
+            updateTimeline(timelineStages);
+          }
+        }
+      } else {
+        isRunning = false;
+        pill.classList.remove('running');
+        indicator.classList.remove('active');
+        text.textContent = 'Ready';
+        startBtn.disabled = clients.length === 0;
+        stopBtn.disabled = true;
+        progressRing.style.display = 'none';
+        hideBrowserFrame();
+
+        // Mark all completed when idle
+        if (timelineStages.length > 0) {
+          timelineStages.forEach(stage => stage.status = 'completed');
+          updateTimeline(timelineStages);
+        }
+      }
+    }
+
+    // Activity Feed
+    function addActivityCard(data) {
+      const empty = document.getElementById('activityEmpty');
+      const feed = document.getElementById('activityFeed');
+
+      if (empty.style.display !== 'none') {
+        empty.style.display = 'none';
+        feed.style.display = 'flex';
+      }
+
+      const icons = {
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+        success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
+        warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+        error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>'
+      };
+
+      const card = document.createElement('div');
+      card.className = 'activity-card';
+
+      let detailsHtml = '';
+      if (data.data && Object.keys(data.data).length > 0) {
+        detailsHtml = `<div class="activity-details">${Object.entries(data.data).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join(' | ')}</div>`;
+      }
+
+      card.innerHTML = `
+        <div class="activity-icon ${data.level}">
+          ${icons[data.level] || icons.info}
+        </div>
+        <div class="activity-body">
+          <div class="activity-header">
+            <span class="activity-message">${data.message}</span>
+            <span class="activity-time">${data.timestamp}</span>
+          </div>
+          ${detailsHtml}
+        </div>
+      `;
+
+      feed.insertBefore(card, feed.firstChild);
+
+      // Limit cards
+      while (feed.children.length > 50) {
+        feed.removeChild(feed.lastChild);
+      }
+    }
+
+    function clearActivity() {
+      document.getElementById('activityFeed').innerHTML = '';
+      document.getElementById('activityFeed').style.display = 'none';
+      document.getElementById('activityEmpty').style.display = 'flex';
+    }
+
+    // Browser Frame
+    function updateBrowserFrame(frameData) {
+      const frame = document.getElementById('browserFrame');
+      const placeholder = document.getElementById('browserPlaceholder');
+      const loading = document.getElementById('browserLoading');
+      const liveIndicator = document.getElementById('liveIndicator');
+      const urlBar = document.getElementById('browserUrl');
+
+      if (frameData) {
+        frame.src = 'data:image/jpeg;base64,' + frameData;
+        frame.style.display = 'block';
+        placeholder.style.display = 'none';
+        loading.style.display = 'none';
+        liveIndicator.classList.add('active');
+        urlBar.textContent = 'Connected to Xero';
+      }
+    }
+
+    function hideBrowserFrame() {
+      document.getElementById('browserFrame').style.display = 'none';
+      document.getElementById('browserPlaceholder').style.display = 'flex';
+      document.getElementById('browserLoading').style.display = 'none';
+      document.getElementById('liveIndicator').classList.remove('active');
+      document.getElementById('browserUrl').textContent = 'Ready to connect...';
+    }
+
+    function openFullscreen() {
+      const frame = document.getElementById('browserFrame');
+      if (frame.src) {
+        document.getElementById('fullscreenImage').src = frame.src;
+        document.getElementById('fullscreenOverlay').classList.add('active');
+      }
+    }
+
+    function closeFullscreen() {
+      document.getElementById('fullscreenOverlay').classList.remove('active');
+    }
+
+    // Tabs
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById(`${tabName}Tab`).classList.add('active');
+
+      if (tabName === 'downloads') {
+        loadDownloads();
+      }
+    }
+
+    // Timeline
+    function updateTimeline(stages) {
+      const empty = document.getElementById('timelineEmpty');
+      const timeline = document.getElementById('timeline');
+
+      empty.style.display = 'none';
+      timeline.style.display = 'block';
+
+      timeline.innerHTML = stages.map((stage, i) => {
+        const dotClass = stage.status === 'error' ? 'error' :
+                        stage.status === 'completed' ? 'completed' :
+                        stage.status === 'running' ? 'running' : 'pending';
+
+        let icon = '';
+        if (stage.status === 'completed') {
+          icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        } else if (stage.status === 'error') {
+          icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+        }
+
+        const statusText = stage.status === 'running' ? 'In progress...' :
+                          stage.status === 'error' ? 'Failed' :
+                          stage.status === 'completed' ? 'Completed' : 'Pending';
+
+        return `
+          <div class="timeline-item">
+            <div class="timeline-dot ${dotClass}">${icon}</div>
+            <div class="timeline-content">
+              <div class="timeline-title">${stage.name}</div>
+              <div class="timeline-meta">${statusText}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Memory
+    function updateMemory(variables) {
+      const empty = document.getElementById('memoryEmpty');
+      const list = document.getElementById('memoryList');
+
+      if (!variables || Object.keys(variables).length === 0) {
+        empty.style.display = 'block';
+        list.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      list.style.display = 'flex';
+
+      const getIcon = (key) => {
+        if (key.includes('date')) return '📅';
+        if (key.includes('company') || key.includes('client')) return '🏢';
+        if (key.includes('file') || key.includes('download')) return '📄';
+        if (key.includes('url')) return '🔗';
+        if (key.includes('vat')) return '💰';
+        return '💾';
+      };
+
+      list.innerHTML = Object.entries(variables).map(([key, value]) => `
+        <div class="memory-item">
+          <div class="memory-icon">${getIcon(key)}</div>
+          <div class="memory-content">
+            <div class="memory-key">${key.replace(/_/g, ' ')}</div>
+            <div class="memory-value">${value}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Downloads
+    async function loadDownloads(subpath = '') {
+      try {
+        const url = subpath ? `/api/downloads?subpath=${encodeURIComponent(subpath)}` : '/api/downloads';
+        const response = await fetch(url);
+        const data = await response.json();
+        const list = document.getElementById('downloadsList');
+        const pathEl = document.getElementById('downloadsPath');
+
+        currentDownloadPath = data.subpath || '';
+        pathEl.textContent = data.subpath ? `${data.path}/${data.subpath}` : data.path;
+
+        let html = '';
+
+        if (data.parent !== null && data.parent !== undefined) {
+          html += `
+            <div class="download-item" onclick="loadDownloads('${data.parent === '.' ? '' : data.parent}')">
+              <div class="download-icon folder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </div>
+              <div class="download-info">
+                <div class="download-name">..</div>
+                <div class="download-meta">Go back</div>
+              </div>
+            </div>
+          `;
+        }
+
+        if (data.items.length === 0 && !data.parent) {
+          list.innerHTML = '<div class="downloads-empty">No files yet</div>';
+          return;
+        }
+
+        html += data.items.map(item => {
+          if (item.type === 'folder') {
+            return `
+              <div class="download-item" onclick="loadDownloads('${item.path}')">
+                <div class="download-icon folder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <div class="download-info">
+                  <div class="download-name">${item.name}</div>
+                  <div class="download-meta">${item.file_count} file${item.file_count !== 1 ? 's' : ''}</div>
+                </div>
+                <div class="download-actions">
+                  <button class="action-btn delete" onclick="event.stopPropagation(); deleteFile('${item.path}')" title="Delete">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="download-item">
+                <div class="download-icon file">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </div>
+                <div class="download-info">
+                  <div class="download-name">${item.name}</div>
+                  <div class="download-meta">${formatFileSize(item.size)}</div>
+                </div>
+                <div class="download-actions">
+                  <button class="action-btn" onclick="viewFile('${item.path}')" title="View">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                  <button class="action-btn delete" onclick="deleteFile('${item.path}')" title="Delete">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            `;
+          }
+        }).join('');
+
+        list.innerHTML = html;
+      } catch (error) {
+        console.error('Failed to load downloads:', error);
+        document.getElementById('downloadsList').innerHTML = '<div class="downloads-empty">Failed to load</div>';
+      }
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function viewFile(filePath) {
+      window.open(`/api/downloads/view/${encodeURIComponent(filePath)}`, '_blank');
+    }
+
+    async function deleteFile(filePath) {
+      if (!confirm(`Delete "${filePath}"?`)) return;
+
+      try {
+        const response = await fetch(`/api/downloads/${encodeURIComponent(filePath)}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (result.success) {
+          loadDownloads(currentDownloadPath);
+        } else {
+          alert(`Failed to delete: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Failed to delete:', error);
+      }
+    }
+
+    // Drag and drop for upload
+    const uploadZone = document.getElementById('uploadZone');
+
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        document.getElementById('fileInput').files = e.dataTransfer.files;
+        handleFileUpload({ target: { files: [file] } });
+      }
+    });
+
+    // Keyboard shortcut for fullscreen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeFullscreen();
+      }
+    });
+
+    // Initialize
+    connect();
+  </script>
+</body>
+</html>

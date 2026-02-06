@@ -1,0 +1,239 @@
+name: payable_invoice_detail
+description: Generate Payable Invoice Detail report with Last Payment Date filter and export to Excel
+version: "3.0"
+requires_login: true
+starts_from: reports_page
+
+steps:
+  - id: wait_for_reports_ready
+    action: wait_for_selector
+    description: Wait for reports page search to be ready
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    timeout: 10000
+
+  - id: search_payable_invoice
+    action: fill
+    description: Search for Payable Invoice Detail report
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    value: Payable Invoice Detail
+    wait_visible: true
+    timeout: 5000
+    wait_after: 100
+
+  - id: wait_for_search_dropdown
+    action: wait_for_selector
+    description: Wait for search results dropdown to appear
+    selectors:
+      - "listbox"
+      - "[role='listbox']"
+    timeout: 2000
+
+  - id: click_payable_invoice_report
+    action: click
+    description: Click on Payable Invoice Detail report from search results
+    selectors:
+      - "[data-automationid='search-result-1023--body']"
+      - "listbox button:has-text('Payable Invoice Detail')"
+      - "[role='listbox'] button:has-text('Payable Invoice Detail')"
+    wait_after: 500
+
+  - id: wait_for_report_page
+    action: wait_for_selector
+    description: Wait for report page to load
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    timeout: 10000
+
+  - id: click_date_dropdown
+    action: click
+    description: Click date dropdown to select period
+    selectors:
+      - "[data-automationid='report-settings-convenience-date-dropdown-button']"
+      - "button[aria-label='List of convenience dates']"
+    wait_after: 800
+
+  - id: wait_for_last_financial_year_option
+    action: wait_for_selector
+    description: Wait for Last financial year option to be visible
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    timeout: 5000
+
+  - id: select_last_financial_year
+    action: click
+    description: Select 'Last financial year' from dropdown
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    wait_after: 500
+
+  - id: read_report_end_date
+    action: read_input
+    description: Read the report end date for filter calculation
+    selectors:
+      - "#report-settings-custom-date-input-to"
+      - "[data-automationid='report-settings-custom-date-input-to--input']"
+    save_as: report_end_date
+    timeout: 5000
+
+  - id: click_columns_dropdown
+    action: click
+    description: Open columns selection dropdown
+    selectors:
+      - "[data-automationid='report-settings-columns-button']"
+      - "#report-settings-columns-button"
+      - "button:has-text('columns selected')"
+    wait_after: 500
+
+  - id: select_columns
+    action: select_columns
+    description: Set exact columns (deselect others, select required)
+    deselect_others: true
+    columns:
+      - selector: "[data-automationid='column-selection-accountname--body--checkbox']"
+        name: Account
+      - selector: "[data-automationid='column-selection-accountcode--body--checkbox']"
+        name: Account Code
+      - selector: "[data-automationid='column-selection-contactgroup--body--checkbox']"
+        name: Contact Group
+      - selector: "[data-automationid='column-selection-description--body--checkbox']"
+        name: Description
+      - selector: "[data-automationid='column-selection-duedate--body--checkbox']"
+        name: Due Date
+      - selector: "[data-automationid='column-selection-gross--body--checkbox']"
+        name: Gross
+      - selector: "[data-automationid='column-selection-invoicedate--body--checkbox']"
+        name: Invoice Date
+      - selector: "[data-automationid='column-selection-invoicetotal--body--checkbox']"
+        name: Invoice Total
+      - selector: "[data-automationid='column-selection-itemcode--body--checkbox']"
+        name: Item Code
+      - selector: "[data-automationid='column-selection-lastpaymentdate--body--checkbox']"
+        name: Last Payment Date
+      - selector: "[data-automationid='column-selection-quantity--body--checkbox']"
+        name: Quantity
+      - selector: "[data-automationid='column-selection-reference--body--checkbox']"
+        name: Reference
+      - selector: "[data-automationid='column-selection-invoicetype--body--checkbox']"
+        name: Source
+      - selector: "[data-automationid='column-selection-invoicestatus--body--checkbox']"
+        name: Status
+      - selector: "[data-automationid='column-selection-unitpriceexclusive--body--checkbox']"
+        name: Unit Price (ex)
+      - selector: "[data-automationid='column-selection-taxamount--body--checkbox']"
+        name: VAT
+      - selector: "[data-automationid='column-selection-taxratename--body--checkbox']"
+        name: VAT Rate Name
+    wait_after: 200
+
+  - id: close_columns_dropdown
+    action: press_key
+    description: Close columns dropdown by pressing Escape
+    key: Escape
+    wait_after: 300
+
+  - id: click_filter_button
+    action: click
+    description: Open filter modal
+    selectors:
+      - "[data-automationid='report-settings-filter-button']"
+      - "button:has-text('Filter')"
+    wait_after: 300
+
+  - id: wait_for_filter_modal
+    action: wait_for_selector
+    description: Wait for filter modal to appear
+    selectors:
+      - ".report-settings-filter-modal"
+      - "[role='dialog']:has-text('Filter')"
+    timeout: 5000
+
+  - id: click_last_payment_date_accordion
+    action: click
+    description: Expand Last Payment Date filter accordion
+    selectors:
+      - ".xui-accordiontrigger:has-text('Last Payment Date')"
+      - "[data-automationid='report-settings-filter-accordion-trigger']:has-text('Last Payment Date')"
+    wait_after: 300
+
+  - id: fill_filter_start_date
+    action: fill
+    description: Fill filter start date (report end date + 1 day)
+    selectors:
+      - ".report-settings-filter-modal #report-settings-custom-date-input-from"
+      - ".report-settings-filter-modal input[aria-label='any']"
+      - ".xui-accordionwrapper--open input:first-of-type"
+    value: "${DATE_ADD:report_end_date:1}"
+    wait_after: 200
+
+  - id: fill_filter_end_date
+    action: fill
+    description: Fill filter end date (today)
+    selectors:
+      - ".report-settings-filter-modal #report-settings-custom-date-input-to"
+      - ".xui-accordionwrapper--open input:last-of-type"
+    value: "${TODAY}"
+    wait_after: 200
+
+  - id: click_filter_apply
+    action: click
+    description: Apply the filter
+    selectors:
+      - "[data-automationid='report-settings-filter-modal-apply-button']"
+      - ".report-settings-filter-modal button:has-text('Apply')"
+    wait_after: 300
+
+  - id: click_update_button
+    action: click
+    description: Click Update button to refresh report
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    wait_after: 500
+
+  - id: wait_for_report_data
+    action: wait_for_selector
+    description: Wait for report table to load
+    selectors:
+      - "status:has-text('Report has finished loading')"
+      - table
+      - "[role='table']"
+    timeout: 10000
+
+  - id: validate_before_export
+    action: validate_filters
+    description: Validate all filters are correctly set before export
+    fail_on_error: false
+
+  - id: click_export_button
+    action: click
+    description: Click Export button
+    selectors:
+      - "button:has-text('Export')"
+      - "[data-testid='export-button']"
+      - "button[aria-label*='Export']"
+    wait_after: 500
+
+  - id: wait_for_export_menu
+    action: wait_for_selector
+    description: Wait for export menu to appear
+    selectors:
+      - "button:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 5000
+
+  - id: click_excel_and_download
+    action: click_and_download
+    description: Click Excel and download the file
+    selectors:
+      - "button:has-text('Excel')"
+      - "a:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 30000
+    save_to: downloads/

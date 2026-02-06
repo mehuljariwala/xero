@@ -1,0 +1,158 @@
+name: aged_payables_detail
+description: Generate Aged Payables Detail report with specific columns and export to Excel
+version: "3.0"
+requires_login: true
+starts_from: reports_page
+
+steps:
+  - id: wait_for_reports_ready
+    action: wait_for_selector
+    description: Wait for reports page search to be ready
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    timeout: 10000
+
+  - id: search_aged_payables
+    action: fill
+    description: Search for Aged Payables Detail report
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    value: Aged Payables Detail
+    wait_visible: true
+    timeout: 5000
+    wait_after: 100
+
+  - id: wait_for_search_dropdown
+    action: wait_for_selector
+    description: Wait for search results dropdown to appear
+    selectors:
+      - "listbox"
+      - "[role='listbox']"
+    timeout: 2000
+
+  - id: click_aged_payables_report
+    action: click
+    description: Click on Aged Payables Detail report from search results dropdown
+    selectors:
+      - "listbox button:has-text('Aged Payables Detail')"
+      - "[role='listbox'] button:has-text('Aged Payables Detail')"
+    wait_after: 500
+
+  - id: wait_for_report_page
+    action: wait_for_selector
+    description: Wait for report page to load
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    timeout: 10000
+
+  - id: click_date_dropdown
+    action: click
+    description: Click date dropdown to select period
+    selectors:
+      - "[data-automationid='report-settings-convenience-date-dropdown-button']"
+      - "button[aria-label='List of convenience dates']"
+    wait_after: 800
+
+  - id: wait_for_date_options
+    action: wait_for_selector
+    description: Wait for date options dropdown to appear
+    selectors:
+      - "[data-automationid='report-settings-date-option-End of last financial year']"
+      - "[role='option']:has-text('End of last financial year')"
+    timeout: 5000
+
+  - id: select_end_of_last_financial_year
+    action: click
+    description: Select 'End of last financial year' from dropdown
+    selectors:
+      - "[data-automationid='report-settings-date-option-End of last financial year']"
+      - "[role='option']:has-text('End of last financial year')"
+      - "li:has-text('End of last financial year')"
+    wait_after: 500
+
+  - id: click_columns_dropdown
+    action: click
+    description: Open columns selection dropdown
+    selectors:
+      - "[data-automationid='report-settings-columns-button']"
+      - "#report-settings-columns-button"
+      - "button:has-text('columns selected')"
+    wait_after: 500
+
+  - id: select_columns
+    action: select_columns
+    description: Set exact columns (deselect others, select required)
+    deselect_others: true
+    columns:
+      - selector: "[data-automationid='column-selection-amountinperiod--body--checkbox']"
+        name: Ageing Periods
+      - selector: "[data-automationid='column-selection-duedate--body--checkbox']"
+        name: Due Date
+      - selector: "[data-automationid='column-selection-invoicedate--body--checkbox']"
+        name: Invoice Date
+      - selector: "[data-automationid='column-selection-invoicereference--body--checkbox']"
+        name: Invoice Reference
+      - selector: "[data-automationid='column-selection-total--body--checkbox']"
+        name: Total
+      - selector: "[data-automationid='column-selection-taxamountdue--body--checkbox']"
+        name: Outstanding VAT
+    wait_after: 200
+
+  - id: close_columns_dropdown
+    action: press_key
+    description: Close columns dropdown by pressing Escape
+    key: Escape
+    wait_after: 300
+
+  - id: click_update_button
+    action: click
+    description: Click Update button to refresh report
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    wait_after: 500
+
+  - id: wait_for_report_data
+    action: wait_for_selector
+    description: Wait for report table to load
+    selectors:
+      - "status:has-text('Report has finished loading')"
+      - table
+      - "[role='table']"
+    timeout: 10000
+
+  - id: validate_before_export
+    action: validate_filters
+    description: Validate all filters are correctly set before export
+    fail_on_error: false
+
+  - id: click_export_button
+    action: click
+    description: Click Export button
+    selectors:
+      - "button:has-text('Export')"
+      - "button[aria-label*='Export']"
+    wait_after: 500
+
+  - id: wait_for_export_menu
+    action: wait_for_selector
+    description: Wait for export menu to appear
+    selectors:
+      - "button:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 5000
+
+  - id: click_excel_and_download
+    action: click_and_download
+    description: Click Excel and download the file
+    selectors:
+      - "button:has-text('Excel')"
+      - "a:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 30000
+    save_to: downloads/

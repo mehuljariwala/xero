@@ -1,0 +1,190 @@
+name: account_transactions
+description: Generate Account Transactions report with specific columns and export to Excel
+version: "3.0"
+requires_login: true
+starts_from: reports_page
+
+steps:
+  - id: wait_for_reports_ready
+    action: wait_for_selector
+    description: Wait for reports page search to be ready
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    timeout: 10000
+
+  - id: search_account_transactions
+    action: fill
+    description: Search for Account Transactions report
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    value: Account Transactions
+    wait_visible: true
+    timeout: 5000
+    wait_after: 100
+
+  - id: wait_for_search_dropdown
+    action: wait_for_selector
+    description: Wait for search results dropdown to appear
+    selectors:
+      - "listbox"
+      - "[role='listbox']"
+    timeout: 2000
+
+  - id: click_account_transactions_report
+    action: click
+    description: Click on Account Transactions report from search results dropdown
+    selectors:
+      - "[data-automationid='search-result-1209--body']"
+      - "#1209 button"
+      - "li#1209 button"
+    wait_after: 500
+
+  - id: wait_for_report_page
+    action: wait_for_selector
+    description: Wait for report page to load
+    selectors:
+      - "[data-automationid='Accounts-selector-input-open']"
+      - "button:has-text('Update')"
+    timeout: 10000
+
+  - id: click_accounts_dropdown
+    action: click
+    description: Open Accounts selector dropdown
+    selectors:
+      - "[data-automationid='Accounts-selector-input-open']"
+      - "[data-automationid='Accounts-selector-autocompleter--input']"
+    wait_after: 300
+
+  - id: select_all_accounts
+    action: click
+    description: Select All accounts option
+    selectors:
+      - "[data-automationid='Accounts-selector-dropdown-select-all']"
+      - "button:has-text('Select all')"
+    wait_after: 300
+
+  - id: click_date_dropdown
+    action: click
+    description: Click date dropdown to select period
+    selectors:
+      - "[data-automationid='report-settings-convenience-date-dropdown-button']"
+      - "button[aria-label='List of convenience dates']"
+    wait_after: 800
+
+  - id: wait_for_last_financial_year_option
+    action: wait_for_selector
+    description: Wait for Last financial year option to be visible
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    timeout: 5000
+
+  - id: select_last_financial_year
+    action: click
+    description: Select 'Last financial year' from dropdown
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    wait_after: 500
+
+  - id: click_columns_dropdown
+    action: click
+    description: Open columns selection dropdown
+    selectors:
+      - "[data-automationid='report-settings-columns-button']"
+      - "button:has-text('columns selected')"
+      - "button:has-text('Columns')"
+    wait_after: 500
+
+  - id: select_columns
+    action: select_columns
+    description: Set exact columns (deselect others, select required)
+    deselect_others: true
+    columns:
+      - selector: "[data-automationid='column-selection-accountcode--body--checkbox']"
+        name: Account Code
+      - selector: "[data-automationid='column-selection-accountclass--body--checkbox']"
+        name: Account Type
+      - selector: "[data-automationid='column-selection-contactname--body--checkbox']"
+        name: Contact
+      - selector: "[data-automationid='column-selection-credit--body--checkbox']"
+        name: Credit
+      - selector: "[data-automationid='column-selection-date--body--checkbox']"
+        name: Date
+      - selector: "[data-automationid='column-selection-debit--body--checkbox']"
+        name: Debit
+      - selector: "[data-automationid='column-selection-description--body--checkbox']"
+        name: Description
+      - selector: "[data-automationid='column-selection-gross--body--checkbox']"
+        name: Gross
+      - selector: "[data-automationid='column-selection-invoicenumber--body--checkbox']"
+        name: Invoice Number
+      - selector: "[data-automationid='column-selection-net--body--checkbox']"
+        name: Net
+      - selector: "[data-automationid='column-selection-reference--body--checkbox']"
+        name: Reference
+      - selector: "[data-automationid='column-selection-runningbalance--body--checkbox']"
+        name: Running Balance
+      - selector: "[data-automationid='column-selection-source--body--checkbox']"
+        name: Source
+      - selector: "[data-automationid='column-selection-taxamount--body--checkbox']"
+        name: VAT
+      - selector: "[data-automationid='column-selection-taxratename--body--checkbox']"
+        name: VAT Rate Name
+    wait_after: 200
+
+  - id: close_columns_dropdown
+    action: press_key
+    description: Close columns dropdown by pressing Escape
+    key: Escape
+    wait_after: 300
+
+  - id: click_update_button
+    action: click
+    description: Click Update button to refresh report
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    wait_after: 500
+
+  - id: wait_for_report_data
+    action: wait_for_selector
+    description: Wait for report table to load
+    selectors:
+      - "status:has-text('Report has finished loading')"
+      - table
+      - "[role='table']"
+    timeout: 10000
+
+  - id: validate_before_export
+    action: validate_filters
+    description: Validate all filters are correctly set before export
+    fail_on_error: false
+
+  - id: click_export_button
+    action: click
+    description: Click Export button
+    selectors:
+      - "button:has-text('Export')"
+      - "button[aria-label*='Export']"
+    wait_after: 500
+
+  - id: wait_for_export_menu
+    action: wait_for_selector
+    description: Wait for export menu to appear
+    selectors:
+      - "button:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 5000
+
+  - id: click_excel_and_download
+    action: click_and_download
+    description: Click Excel and download the file
+    selectors:
+      - "button:has-text('Excel')"
+      - "a:has-text('Excel')"
+      - "[role='menuitem']:has-text('Excel')"
+    timeout: 30000
+    save_to: downloads/

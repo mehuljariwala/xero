@@ -1,0 +1,212 @@
+name: vat_returns
+description: Export all VAT returns from the start of last financial year onwards
+version: "4.0"
+requires_login: true
+starts_from: dashboard
+
+steps:
+  - id: navigate_to_dashboard
+    action: goto
+    description: Navigate to Xero dashboard
+    url: https://go.xero.com
+    wait_after: 1000
+
+  - id: wait_for_nav_ready
+    action: wait_for_selector
+    description: Wait for navigation bar to be ready
+    selectors:
+      - "button:has-text('Reporting')"
+    timeout: 15000
+
+  - id: click_reporting_menu
+    action: click
+    description: Click on Reporting button in top navigation bar
+    selectors:
+      - "button:has-text('Reporting')"
+    wait_after: 300
+
+  - id: click_profit_loss_link
+    action: click
+    description: Click on Profit and Loss from Favourite reports
+    selectors:
+      - "a:has-text('Profit and Loss')"
+    wait_after: 500
+
+  - id: wait_for_report_page
+    action: wait_for_url
+    description: Wait for redirect to reports page
+    patterns:
+      - "**/reporting.xero.com/**"
+      - "**ProfitAndLoss**"
+    timeout: 10000
+
+  - id: wait_for_report_settings
+    action: wait_for_selector
+    description: Wait for report settings to load
+    selectors:
+      - "[data-automationid='report-settings-convenience-date-dropdown-button']"
+      - "button[aria-label='List of convenience dates']"
+    timeout: 10000
+
+  - id: click_date_dropdown
+    action: click
+    description: Click date dropdown to select period
+    selectors:
+      - "[data-automationid='report-settings-convenience-date-dropdown-button']"
+      - "button[aria-label='List of convenience dates']"
+    wait_after: 800
+
+  - id: wait_for_last_financial_year_option
+    action: wait_for_selector
+    description: Wait for Last financial year option to be visible
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    timeout: 5000
+
+  - id: select_last_financial_year
+    action: click
+    description: Select 'Last financial year' from dropdown
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    wait_after: 500
+
+  - id: verify_date_selection
+    action: wait_for_selector
+    description: Verify Last financial year is selected
+    selectors:
+      - "text=Date range: Last financial year"
+      - "[data-automationid='report-settings-date-range-label']:has-text('Last financial year')"
+    timeout: 5000
+    optional: true
+
+  - id: read_start_date
+    action: read_text
+    description: Read the start date from the date range picker
+    selectors:
+      - "[data-automationid='report-settings-custom-date-input-from--input']"
+      - "#report-settings-custom-date-input-from"
+      - "input.date-selector-custom-date-input:first-of-type"
+    save_as: financial_year_start_date
+    timeout: 5000
+    optional: true
+
+  - id: read_end_date
+    action: read_text
+    description: Read the end date from the date range picker
+    selectors:
+      - "[data-automationid='report-settings-custom-date-input-to--input']"
+      - "#report-settings-custom-date-input-to"
+      - "input.date-selector-custom-date-input:nth-of-type(2)"
+    save_as: financial_year_end_date
+    timeout: 5000
+    optional: true
+
+  - id: go_to_dashboard
+    action: goto
+    description: Navigate back to Xero dashboard
+    url: https://go.xero.com
+    wait_after: 1000
+
+  - id: wait_for_main_nav
+    action: wait_for_selector
+    description: Wait for main navigation to load
+    selectors:
+      - "button:has-text('Tax')"
+    timeout: 10000
+
+  - id: click_tax_menu
+    action: click
+    description: Click on Tax menu in top navigation
+    selectors:
+      - "button:has-text('Tax')"
+    wait_after: 300
+
+  - id: click_vat_returns
+    action: click
+    description: Click on VAT returns from Tax dropdown
+    selectors:
+      - "a:has-text('VAT returns')"
+    wait_after: 1000
+
+  - id: wait_for_vat_page
+    action: wait_for_selector
+    description: Wait for VAT returns page to load
+    selectors:
+      - "button:has-text('Review')"
+    timeout: 30000
+
+  - id: process_vat_returns
+    action: loop_vat_returns
+    description: Process each VAT return from financial year start onwards
+    filter_date_from: "${financial_year_start_date}"
+    reverse_order: true
+    sub_steps:
+      - id: wait_for_vat_detail
+        action: wait_for_selector
+        description: Wait for VAT return detail page
+        selectors:
+          - "button:has-text('Export')"
+          - "[data-automationid*='export']"
+        timeout: 15000
+
+      - id: click_export_dropdown
+        action: click
+        description: Click Export dropdown button
+        selectors:
+          - "button:has-text('Export')"
+          - "[data-automationid*='export']"
+        wait_after: 500
+
+      - id: wait_for_export_menu
+        action: wait_for_selector
+        description: Wait for export menu options
+        selectors:
+          - "button:has-text('Export to Excel')"
+          - "button:has-text('Excel')"
+          - "[role='menuitem']:has-text('Excel')"
+        timeout: 5000
+
+      - id: click_excel_and_download
+        action: click_and_download
+        description: Click Excel and download the file
+        selectors:
+          - "button:has-text('Export to Excel')"
+          - "button:has-text('Excel')"
+          - "[role='menuitem']:has-text('Excel')"
+        timeout: 30000
+        save_to: downloads/
+
+      - id: wait_after_download
+        action: wait_for_selector
+        description: Wait a moment after download
+        selectors:
+          - "body"
+        timeout: 2000
+        optional: true
+
+      - id: click_tax_menu_back
+        action: click
+        description: Click Tax menu to go back
+        selectors:
+          - "button:has-text('Tax')"
+        wait_after: 500
+
+      - id: click_vat_returns_back
+        action: click
+        description: Click VAT returns to go back to list
+        selectors:
+          - "a:has-text('VAT returns')"
+        wait_after: 2000
+
+      - id: wait_for_vat_list
+        action: wait_for_selector
+        description: Wait for VAT returns list to reload
+        selectors:
+          - "button:has-text('Review')"
+        timeout: 10000
+
+  - id: capture_completion
+    action: capture_state
+    description: Capture completion state
+    save:
+      url: vat_returns_url

@@ -1,0 +1,90 @@
+name: get_financial_year_end
+description: Navigate to Profit and Loss and capture the End of Last Financial Year date
+version: "3.0"
+requires_login: true
+starts_from: reports_page
+
+steps:
+  - id: wait_for_reports_ready
+    action: wait_for_selector
+    description: Wait for reports page search to be ready
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    timeout: 10000
+
+  - id: search_profit_loss
+    action: fill
+    description: Search for Profit and Loss report
+    selectors:
+      - "[data-automationid='search-reports--input']"
+      - "input[placeholder='Find a report']"
+      - "input.search-reports-input"
+    value: Profit and Loss
+    wait_visible: true
+    timeout: 5000
+    wait_after: 300
+
+  - id: wait_for_search_dropdown
+    action: wait_for_selector
+    description: Wait for search results dropdown to appear
+    selectors:
+      - "listbox"
+      - "[role='listbox']"
+    timeout: 5000
+
+  - id: click_profit_loss_report
+    action: click
+    description: Click on Profit and Loss report from search results
+    selectors:
+      - "listbox button:has-text('Profit and Loss')"
+      - "[role='listbox'] button:has-text('Profit and Loss')"
+    wait_after: 500
+
+  - id: wait_for_report_page
+    action: wait_for_selector
+    description: Wait for report page to load
+    selectors:
+      - "[data-automationid='settings-panel-update-button']"
+      - "button:has-text('Update')"
+    timeout: 10000
+
+  - id: click_date_dropdown
+    action: click
+    description: Click date dropdown to select period
+    selectors:
+      - "[data-automationid='report-settings-convenience-date-dropdown-button']"
+      - "button[aria-label='List of convenience dates']"
+    wait_after: 800
+
+  - id: wait_for_last_financial_year_option
+    action: wait_for_selector
+    description: Wait for Last financial year option to be visible
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    timeout: 5000
+
+  - id: select_last_financial_year
+    action: click
+    description: Select 'Last financial year' from dropdown
+    selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
+    wait_after: 500
+
+  - id: read_end_date
+    action: read_text
+    description: Read the end date value from the date input
+    selectors:
+      - "[data-automationid='report-settings-custom-date-input-to--input']"
+      - "#report-settings-custom-date-input-to"
+      - "input.date-selector-custom-date-input:nth-of-type(2)"
+    save_as: financial_year_end_date
+    timeout: 5000
+    optional: true
+
+  - id: capture_date_state
+    action: capture_state
+    description: Save the captured date
+    save:
+      url: profit_loss_url
