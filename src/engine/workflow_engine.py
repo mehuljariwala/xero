@@ -1160,12 +1160,20 @@ class WorkflowEngine:
             if not temp_path:
                 raise StepFailedError("Download completed but no file path returned")
 
-            # Check temp file size
-            temp_size = Path(temp_path).stat().st_size if Path(temp_path).exists() else 0
+            # Wait for file to be fully written (race condition fix)
+            temp_size = 0
+            for attempt in range(10):
+                await asyncio.sleep(0.5)
+                if Path(temp_path).exists():
+                    temp_size = Path(temp_path).stat().st_size
+                    if temp_size > 0:
+                        break
+                await self._emit_log("info", f"   ⏳ Waiting for file write... (attempt {attempt + 1})")
+
             await self._emit_log("info", f"   📦 Temp file size: {temp_size} bytes")
 
             if temp_size == 0:
-                raise StepFailedError("Download completed but temp file is 0 bytes")
+                raise StepFailedError("Download completed but temp file is 0 bytes - possible session expiry or server error")
 
             client_name = self.state.variables.get('selected_client', '')
             company_name = self.state.variables.get('company_name', client_name)
@@ -1446,12 +1454,20 @@ class WorkflowEngine:
             if not temp_path:
                 raise StepFailedError("Download completed but no file path returned")
 
-            # Check temp file size
-            temp_size = Path(temp_path).stat().st_size if Path(temp_path).exists() else 0
+            # Wait for file to be fully written (race condition fix)
+            temp_size = 0
+            for attempt in range(10):
+                await asyncio.sleep(0.5)
+                if Path(temp_path).exists():
+                    temp_size = Path(temp_path).stat().st_size
+                    if temp_size > 0:
+                        break
+                await self._emit_log("info", f"   ⏳ Waiting for file write... (attempt {attempt + 1})")
+
             await self._emit_log("info", f"   📦 Temp file size: {temp_size} bytes")
 
             if temp_size == 0:
-                raise StepFailedError("Download completed but temp file is 0 bytes")
+                raise StepFailedError("Download completed but temp file is 0 bytes - possible session expiry or server error")
 
             client_name = self.state.variables.get('selected_client', '')
             company_name = self.state.variables.get('company_name', client_name)

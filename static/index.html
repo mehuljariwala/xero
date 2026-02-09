@@ -190,13 +190,43 @@
       50% { opacity: 0.7; transform: scale(1.1); }
     }
 
-    /* Main Layout - 3 Panels */
+    /* Main Layout - 3 Panels + Resize Handle */
     .main {
       display: grid;
-      grid-template-columns: 320px 1fr 380px;
+      grid-template-columns: 320px 1fr 6px 380px;
       gap: 1px;
       background: var(--border-subtle);
       overflow: hidden;
+    }
+
+    .resize-handle {
+      background: var(--bg-deep);
+      cursor: col-resize;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      z-index: 10;
+    }
+
+    .resize-handle::after {
+      content: '';
+      width: 2px;
+      height: 32px;
+      border-radius: 1px;
+      background: transparent;
+      transition: background 0.2s ease;
+    }
+
+    .resize-handle:hover::after,
+    .resize-handle.dragging::after {
+      background: var(--accent-emerald);
+    }
+
+    .resize-handle:hover,
+    .resize-handle.dragging {
+      background: var(--border-subtle);
     }
 
     .panel {
@@ -431,6 +461,36 @@
 
     .client-reports.visible {
       display: flex;
+    }
+
+    .report-toggle-all {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      background: none;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: fit-content;
+    }
+
+    .report-toggle-all:hover {
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+      background: var(--accent-emerald-dim);
+    }
+
+    .report-toggle-all svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
     }
 
     .report-item {
@@ -1234,6 +1294,151 @@
       color: var(--text-muted);
     }
 
+    /* Setup Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-deep);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--accent-emerald), #059669);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.3);
+    }
+
+    .modal-icon svg {
+      width: 32px;
+      height: 32px;
+      color: white;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .modal-header p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .form-input {
+      padding: 14px 16px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 0 3px var(--accent-emerald-dim);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .modal-footer {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .modal-footer p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .modal-error {
+      background: var(--accent-rose-dim);
+      border: 1px solid var(--accent-rose);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: var(--accent-rose);
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .modal-error.visible {
+      display: block;
+    }
+
     /* Fullscreen overlay */
     .fullscreen-overlay {
       display: none;
@@ -1298,11 +1503,254 @@
       transform-origin: center;
       transition: stroke-dashoffset 0.5s ease;
     }
+
+    /* Preview Modal */
+    .preview-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 3000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-overlay.active {
+      display: flex;
+    }
+
+    .preview-modal {
+      width: 90vw;
+      height: 85vh;
+      background: var(--bg-deep);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      flex-shrink: 0;
+    }
+
+    .preview-header-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-sky-dim);
+      color: var(--accent-sky);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .preview-header-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .preview-filename {
+      flex: 1;
+      font-size: 0.95rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .preview-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .preview-download-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--accent-emerald);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preview-download-btn:hover {
+      background: #047857;
+      transform: translateY(-1px);
+    }
+
+    .preview-download-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .preview-close-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      background: var(--bg-deep);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .preview-close-btn:hover {
+      background: var(--accent-rose);
+      border-color: var(--accent-rose);
+      color: white;
+    }
+
+    .preview-close-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .preview-body {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-deepest);
+    }
+
+    .preview-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .preview-body img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .preview-no-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .preview-no-preview-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-no-preview-icon svg {
+      width: 36px;
+      height: 36px;
+      color: var(--text-muted);
+    }
+
+    .preview-no-preview p {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .preview-no-preview span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .preview-no-preview .preview-download-btn {
+      margin-top: 8px;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+    }
+
+    .download-name-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: color 0.2s ease;
+    }
+
+    .download-name-link:hover {
+      color: var(--accent-emerald);
+    }
   </style>
 </head>
 <body>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
+
+  <!-- Setup Modal -->
+  <div class="modal-overlay" id="setupModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h2>Xero Setup</h2>
+        <p>Enter your Xero login credentials to get started</p>
+      </div>
+      <form class="modal-form" onsubmit="saveCredentials(event)">
+        <div class="modal-error" id="setupError"></div>
+        <div class="form-group">
+          <label for="xeroEmail">Email Address</label>
+          <input type="email" id="xeroEmail" class="form-input" placeholder="you@company.com" required>
+        </div>
+        <div class="form-group">
+          <label for="xeroPassword">Password</label>
+          <input type="password" id="xeroPassword" class="form-input" placeholder="Enter your Xero password" required>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" id="saveCredentialsBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save & Continue
+          </button>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <p>Your credentials are stored locally in the .env file</p>
+      </div>
+    </div>
+  </div>
 
   <div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
     <button class="fullscreen-close">
@@ -1312,6 +1760,38 @@
       </svg>
     </button>
     <img id="fullscreenImage" src="" alt="Browser View">
+  </div>
+
+  <!-- File Preview Modal -->
+  <div class="preview-overlay" id="previewOverlay">
+    <div class="preview-modal">
+      <div class="preview-header">
+        <div class="preview-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <div class="preview-filename" id="previewFileName"></div>
+        <div class="preview-actions">
+          <button class="preview-download-btn" id="previewDownloadBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download
+          </button>
+          <button class="preview-close-btn" onclick="closePreview()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="preview-body" id="previewBody"></div>
+    </div>
   </div>
 
   <div class="app">
@@ -1336,6 +1816,12 @@
           <div class="status-indicator" id="statusIndicator"></div>
           <span id="statusText">Ready</span>
         </div>
+        <button class="action-btn" onclick="showSetupModal()" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -1480,8 +1966,11 @@
         </div>
       </div>
 
+      <!-- Resize Handle -->
+      <div class="resize-handle" id="resizeHandle"></div>
+
       <!-- Right Panel - Tabs -->
-      <div class="panel">
+      <div class="panel" id="rightPanel">
         <div class="panel-header">
           <div class="tabs">
             <button class="tab active" onclick="switchTab('timeline')">Timeline</button>
@@ -1664,9 +2153,13 @@
               </div>
             </div>
             <div class="client-reports" id="reports-${index}">
+              <button class="report-toggle-all" onclick="event.stopPropagation(); toggleAllReports(${index})" id="toggle-${index}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                Deselect All
+              </button>
               ${availableReports.map(report => `
                 <label class="report-item">
-                  <input type="checkbox" data-client="${client}" data-report="${report.id}" checked>
+                  <input type="checkbox" data-client="${client}" data-report="${report.id}" checked onchange="updateToggleLabel(${index})">
                   <span>${report.name}</span>
                 </label>
               `).join('')}
@@ -1681,6 +2174,25 @@
       const reports = document.getElementById(`reports-${index}`);
       expand.classList.toggle('expanded');
       reports.classList.toggle('visible');
+    }
+
+    function toggleAllReports(clientIndex) {
+      const container = document.getElementById(`reports-${clientIndex}`);
+      const checkboxes = container.querySelectorAll('.report-item input');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      checkboxes.forEach(cb => cb.checked = !allChecked);
+      updateToggleLabel(clientIndex);
+    }
+
+    function updateToggleLabel(clientIndex) {
+      const container = document.getElementById(`reports-${clientIndex}`);
+      const checkboxes = container.querySelectorAll('.report-item input');
+      const toggle = document.getElementById(`toggle-${clientIndex}`);
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+      toggle.innerHTML = allChecked
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg> Deselect All'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg> Select All';
     }
 
     function selectAllClients() {
@@ -2049,6 +2561,8 @@
               </div>
             `;
           } else {
+            const escapedPath = item.path.replace(/'/g, "\\'");
+            const escapedName = item.name.replace(/'/g, "\\'");
             return `
               <div class="download-item">
                 <div class="download-icon file">
@@ -2058,11 +2572,11 @@
                   </svg>
                 </div>
                 <div class="download-info">
-                  <div class="download-name">${item.name}</div>
+                  <div class="download-name-link" onclick="openPreview('${escapedPath}', '${escapedName}')">${item.name}</div>
                   <div class="download-meta">${formatFileSize(item.size)}</div>
                 </div>
                 <div class="download-actions">
-                  <button class="action-btn" onclick="viewFile('${item.path}')" title="View">
+                  <button class="action-btn" onclick="openPreview('${escapedPath}', '${escapedName}')" title="Preview">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
@@ -2095,8 +2609,67 @@
       return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 
-    function viewFile(filePath) {
-      window.open(`/api/downloads/view/${encodeURIComponent(filePath)}`, '_blank');
+    function viewFile(filePath, fileName) {
+      if (!fileName) {
+        fileName = filePath.split('/').pop();
+      }
+      openPreview(filePath, fileName);
+    }
+
+    function openPreview(filePath, fileName) {
+      const overlay = document.getElementById('previewOverlay');
+      const body = document.getElementById('previewBody');
+      const nameEl = document.getElementById('previewFileName');
+      const downloadBtn = document.getElementById('previewDownloadBtn');
+      const fileUrl = `/api/downloads/view/${encodeURIComponent(filePath)}`;
+
+      nameEl.textContent = fileName;
+      downloadBtn.onclick = () => window.open(fileUrl, '_blank');
+
+      const ext = fileName.split('.').pop().toLowerCase();
+
+      body.innerHTML = '';
+
+      if (ext === 'html' || ext === 'pdf') {
+        const iframe = document.createElement('iframe');
+        iframe.src = fileUrl;
+        body.appendChild(iframe);
+      } else if (['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(ext)) {
+        const img = document.createElement('img');
+        img.src = fileUrl;
+        img.alt = fileName;
+        body.appendChild(img);
+      } else {
+        body.innerHTML = `
+          <div class="preview-no-preview">
+            <div class="preview-no-preview-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            <p>No preview available</p>
+            <span>${fileName}</span>
+            <button class="preview-download-btn" onclick="window.open('${fileUrl}', '_blank')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download File
+            </button>
+          </div>
+        `;
+      }
+
+      overlay.classList.add('active');
+    }
+
+    function closePreview() {
+      const overlay = document.getElementById('previewOverlay');
+      const body = document.getElementById('previewBody');
+      overlay.classList.remove('active');
+      body.innerHTML = '';
     }
 
     async function deleteFile(filePath) {
@@ -2140,11 +2713,148 @@
     // Keyboard shortcut for fullscreen
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        closePreview();
         closeFullscreen();
       }
     });
 
+    // Credentials Management
+    let credentialsConfigured = false;
+
+    async function checkCredentials() {
+      try {
+        const response = await fetch('/api/credentials/check');
+        const data = await response.json();
+        credentialsConfigured = data.configured;
+
+        if (data.email) {
+          document.getElementById('xeroEmail').value = data.email;
+        }
+
+        if (!data.configured) {
+          showSetupModal();
+        }
+        return data.configured;
+      } catch (error) {
+        console.error('Failed to check credentials:', error);
+        return false;
+      }
+    }
+
+    async function showSetupModal() {
+      if (credentialsConfigured) {
+        const response = await fetch('/api/credentials/check');
+        const data = await response.json();
+        if (data.email) {
+          document.getElementById('xeroEmail').value = data.email;
+        }
+      }
+      document.getElementById('xeroPassword').value = '';
+      document.getElementById('setupError').classList.remove('visible');
+      document.getElementById('setupModal').classList.add('active');
+    }
+
+    function hideSetupModal() {
+      document.getElementById('setupModal').classList.remove('active');
+    }
+
+    async function saveCredentials(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('xeroEmail').value.trim();
+      const password = document.getElementById('xeroPassword').value;
+      const errorEl = document.getElementById('setupError');
+      const btn = document.getElementById('saveCredentialsBtn');
+
+      if (!email || !password) {
+        errorEl.textContent = 'Please fill in both email and password';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `
+        <div class="loading-spinner" style="width: 18px; height: 18px; border-width: 2px;"></div>
+        Saving...
+      `;
+
+      try {
+        const response = await fetch('/api/credentials/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          hideSetupModal();
+          addActivityCard({
+            type: 'log',
+            level: 'success',
+            message: `Credentials saved for ${data.email}`,
+            timestamp: new Date().toLocaleTimeString()
+          });
+        } else {
+          throw new Error(data.error || 'Failed to save credentials');
+        }
+      } catch (error) {
+        errorEl.textContent = error.message;
+        errorEl.classList.add('visible');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save & Continue
+        `;
+      }
+    }
+
+    // Right Panel Resize
+    (function() {
+      const handle = document.getElementById('resizeHandle');
+      const main = document.querySelector('.main');
+      let isDragging = false;
+      let startX, startWidth;
+
+      handle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        const rightPanel = document.getElementById('rightPanel');
+        startWidth = rightPanel.getBoundingClientRect().width;
+        handle.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+
+        const frames = main.querySelectorAll('img, iframe');
+        frames.forEach(f => f.style.pointerEvents = 'none');
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = startX - e.clientX;
+        const newWidth = Math.min(600, Math.max(280, startWidth + dx));
+        main.style.gridTemplateColumns = `320px 1fr 6px ${newWidth}px`;
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        handle.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        const frames = main.querySelectorAll('img, iframe');
+        frames.forEach(f => f.style.pointerEvents = '');
+      });
+    })();
+
     // Initialize
+    checkCredentials();
     connect();
   </script>
 </body>

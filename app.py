@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import json
+import os
 import queue
 import threading
 from contextlib import asynccontextmanager
@@ -8,15 +9,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 load_dotenv()
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from src.engine.workflow_engine import WorkflowEngine, WorkflowState
 from src.engine.report_generator import WorkflowReportGenerator
+from src.engine.docx_report import generate_docx_report
 
 
 class WebSocketLogHandler:
@@ -154,6 +157,38 @@ async def delete_file(file_path: str):
         return {"error": str(e), "success": False}
 
 
+class CredentialsInput(BaseModel):
+    email: str
+    password: str
+
+
+@app.get("/api/credentials/check")
+async def check_credentials():
+    email = os.getenv("XERO_EMAIL", "").strip()
+    password = os.getenv("XERO_PASSWORD", "").strip()
+    has_credentials = bool(email and password)
+    return {
+        "configured": has_credentials,
+        "email": email if has_credentials else None
+    }
+
+
+@app.post("/api/credentials/save")
+async def save_credentials(creds: CredentialsInput):
+    env_path = Path(".env")
+
+    if not env_path.exists():
+        env_path.touch()
+
+    set_key(str(env_path), "XERO_EMAIL", creds.email)
+    set_key(str(env_path), "XERO_PASSWORD", creds.password)
+
+    os.environ["XERO_EMAIL"] = creds.email
+    os.environ["XERO_PASSWORD"] = creds.password
+
+    return {"success": True, "email": creds.email}
+
+
 @app.get("/api/status")
 async def get_status():
     global workflow_running
@@ -279,8 +314,7 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
         try:
             cdp_session = await page.context.new_cdp_session(page)
             await cdp_session.send("Browser.setDownloadBehavior", {
-                "behavior": "allowAndName",
-                "downloadPath": str(downloads_dir),
+                "behavior": "allow",
                 "eventsEnabled": True
             })
             cdp_session.on("Page.screencastFrame", lambda params: asyncio.create_task(handle_screencast_frame(params)))
@@ -371,6 +405,9 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
             report_path = f"downloads/workflow_report_{timestamp}.html"
             master_report.generate_html_report(report_path)
             await send_log("info", f"📊 Execution report generated: {report_path}")
+            docx_path = f"downloads/execution_summary_{timestamp}.docx"
+            generate_docx_report(master_report.events, docx_path)
+            await send_log("info", f"📄 Execution summary generated: {docx_path}")
 
     except asyncio.CancelledError:
         await send_log("warning", "Workflow cancelled")
@@ -379,6 +416,9 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
         report_path = f"downloads/workflow_report_{timestamp}.html"
         master_report.generate_html_report(report_path)
         await send_log("info", f"📊 Execution report generated: {report_path}")
+        docx_path = f"downloads/execution_summary_{timestamp}.docx"
+        generate_docx_report(master_report.events, docx_path)
+        await send_log("info", f"📄 Execution summary generated: {docx_path}")
     except Exception as e:
         await send_log("error", f"Workflow failed: {str(e)}")
         master_report.end_workflow("failed", {})
@@ -386,6 +426,9 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
         report_path = f"downloads/workflow_report_{timestamp}.html"
         master_report.generate_html_report(report_path)
         await send_log("info", f"📊 Execution report generated: {report_path}")
+        docx_path = f"downloads/execution_summary_{timestamp}.docx"
+        generate_docx_report(master_report.events, docx_path)
+        await send_log("info", f"📄 Execution summary generated: {docx_path}")
     finally:
         if cdp_session:
             try:
