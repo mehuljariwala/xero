@@ -175,16 +175,17 @@ async def check_credentials():
 
 @app.post("/api/credentials/save")
 async def save_credentials(creds: CredentialsInput):
-    env_path = Path(".env")
-
-    if not env_path.exists():
-        env_path.touch()
-
-    set_key(str(env_path), "XERO_EMAIL", creds.email)
-    set_key(str(env_path), "XERO_PASSWORD", creds.password)
-
     os.environ["XERO_EMAIL"] = creds.email
     os.environ["XERO_PASSWORD"] = creds.password
+
+    try:
+        env_path = Path(".env")
+        if not env_path.exists():
+            env_path.touch()
+        set_key(str(env_path), "XERO_EMAIL", creds.email)
+        set_key(str(env_path), "XERO_PASSWORD", creds.password)
+    except OSError:
+        pass
 
     return {"success": True, "email": creds.email}
 
