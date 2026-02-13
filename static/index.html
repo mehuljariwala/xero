@@ -2724,6 +2724,7 @@
     async function checkCredentials() {
       try {
         const response = await fetch('/api/credentials/check');
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
         const data = await response.json();
         credentialsConfigured = data.configured;
 
@@ -2744,9 +2745,11 @@
     async function showSetupModal() {
       if (credentialsConfigured) {
         const response = await fetch('/api/credentials/check');
-        const data = await response.json();
-        if (data.email) {
-          document.getElementById('xeroEmail').value = data.email;
+        if (response.ok) {
+          const data = await response.json();
+          if (data.email) {
+            document.getElementById('xeroEmail').value = data.email;
+          }
         }
       }
       document.getElementById('xeroPassword').value = '';
@@ -2784,6 +2787,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
+
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
 
         const data = await response.json();
 
