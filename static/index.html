@@ -2030,13 +2030,17 @@
       { id: 'vat_returns', name: 'VAT Returns' }
     ];
 
-    // WebSocket Connection
+    let wsRetryCount = 0;
+    const WS_MAX_RETRIES = 5;
+    const WS_BASE_DELAY = 2000;
+
     function connect() {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
 
       ws.onopen = () => {
         console.log('Connected');
+        wsRetryCount = 0;
         loadDownloads();
       };
 
@@ -2045,9 +2049,25 @@
         handleMessage(data);
       };
 
+      ws.onerror = () => {
+        console.warn('WebSocket connection error');
+      };
+
       ws.onclose = () => {
-        console.log('Disconnected, reconnecting...');
-        setTimeout(connect, 2000);
+        if (wsRetryCount >= WS_MAX_RETRIES) {
+          console.error('WebSocket: max retries reached. Server may not support WebSocket connections.');
+          addActivityCard({
+            type: 'log',
+            level: 'error',
+            timestamp: new Date().toLocaleTimeString(),
+            message: 'Unable to connect to server. This app requires a server that supports WebSocket connections (not serverless platforms like Vercel).'
+          });
+          return;
+        }
+        wsRetryCount++;
+        const delay = WS_BASE_DELAY * Math.pow(2, wsRetryCount - 1);
+        console.log(`Disconnected, reconnecting in ${delay / 1000}s (attempt ${wsRetryCount}/${WS_MAX_RETRIES})...`);
+        setTimeout(connect, delay);
       };
     }
 
@@ -2251,7 +2271,16 @@
 
       updateTimeline(timelineStages);
 
-      // Send clients AND reports to backend
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        addActivityCard({
+          type: 'log',
+          level: 'error',
+          timestamp: new Date().toLocaleTimeString(),
+          message: 'Not connected to server. Please ensure the backend is running and refresh the page.'
+        });
+        return;
+      }
+
       ws.send(JSON.stringify({
         action: 'start',
         clients: selectedClients,
@@ -2267,7 +2296,9 @@
     }
 
     function stopWorkflow() {
-      ws.send(JSON.stringify({ action: 'stop' }));
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ action: 'stop' }));
+      }
     }
 
     // Status Updates

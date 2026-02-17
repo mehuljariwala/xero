@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: xero
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: XERO_EMAIL
+        sync: false
+      - key: XERO_PASSWORD
+        sync: false
