@@ -304,10 +304,10 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
         downloads_dir = Path("downloads").absolute()
         downloads_dir.mkdir(exist_ok=True)
 
-        is_production = os.getenv("RENDER", "") or os.getenv("PRODUCTION", "")
+        headless_mode = os.getenv("HEADLESS", "false").lower() in ("true", "1", "yes")
         context = await playwright.chromium.launch_persistent_context(
             user_data_dir="./browser_data",
-            headless=bool(is_production),
+            headless=headless_mode,
             viewport={"width": 1280, "height": 800},
             accept_downloads=True,
             args=[

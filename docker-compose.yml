@@ -1,0 +1,11 @@
+services:
+  xero:
+    build: .
+    container_name: xero-app
+    restart: unless-stopped
+    ports:
+      - "80:8000"
+    volumes:
+      - ./downloads:/app/downloads
+      - ./browser_data:/app/browser_data
+      - ./.env:/app/.env

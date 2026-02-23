@@ -602,11 +602,20 @@
       padding: 0;
     }
 
-    .activity-section {
+    .browser-section {
       flex: 1;
       min-height: 0;
+      padding: 16px;
       display: flex;
       flex-direction: column;
+    }
+
+    .activity-section {
+      height: 220px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
     }
 
     .section-header {
@@ -882,6 +891,183 @@
       height: 1px;
       background: var(--border-subtle);
       margin: 8px 0;
+    }
+
+    /* Browser Preview */
+    .browser-preview {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+
+    .browser-chrome {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: linear-gradient(to bottom, var(--bg-card), var(--bg-card-hover));
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .browser-dot.red { background: #ff5f57; }
+    .browser-dot.yellow { background: #febc2e; }
+    .browser-dot.green { background: #28c840; }
+
+    .browser-url {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .live-indicator {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--accent-rose);
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: white;
+    }
+
+    .live-indicator.active {
+      display: flex;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .browser-body {
+      flex: 1;
+      min-height: 200px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .browser-frame {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+
+    .browser-placeholder {
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .placeholder-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .browser-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .browser-icon-wrapper svg {
+      width: 36px;
+      height: 36px;
+      color: var(--text-muted);
+    }
+
+    .browser-placeholder p {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .placeholder-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .browser-loading {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .browser-loading p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .fullscreen-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .fullscreen-btn:hover {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+      color: white;
+    }
+
+    .fullscreen-btn svg {
+      width: 14px;
+      height: 14px;
     }
 
     .loading-spinner {
@@ -1358,6 +1544,48 @@
       display: block;
     }
 
+    /* Fullscreen overlay */
+    .fullscreen-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 1000;
+    }
+
+    .fullscreen-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fullscreen-overlay img {
+      max-width: 95%;
+      max-height: 95%;
+      object-fit: contain;
+    }
+
+    .fullscreen-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fullscreen-close svg {
+      width: 20px;
+      height: 20px;
+    }
+
     /* Progress bar in header */
     .progress-ring {
       width: 36px;
@@ -1629,6 +1857,16 @@
     </div>
   </div>
 
+  <div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
+    <button class="fullscreen-close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <img id="fullscreenImage" src="" alt="Browser View">
+  </div>
+
   <!-- File Preview Modal -->
   <div class="preview-overlay" id="previewOverlay">
     <div class="preview-modal">
@@ -1752,8 +1990,55 @@
         </div>
       </div>
 
-      <!-- Middle Panel - Activity Log -->
+      <!-- Middle Panel - Browser & Activity -->
       <div class="panel middle-panel">
+        <!-- Browser Preview Section (Top) -->
+        <div class="browser-section">
+          <div class="browser-preview" id="browserPreview">
+            <div class="browser-chrome">
+              <div class="browser-dots">
+                <div class="browser-dot red"></div>
+                <div class="browser-dot yellow"></div>
+                <div class="browser-dot green"></div>
+              </div>
+              <div class="browser-url" id="browserUrl">Ready to connect...</div>
+              <div class="live-indicator" id="liveIndicator">
+                <div class="live-dot"></div>
+                LIVE
+              </div>
+              <button class="fullscreen-btn" onclick="openFullscreen()" title="Fullscreen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <polyline points="9 21 3 21 3 15"></polyline>
+                  <line x1="21" y1="3" x2="14" y2="10"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="browser-body">
+              <img class="browser-frame" id="browserFrame" alt="Browser View">
+              <div class="browser-placeholder" id="browserPlaceholder">
+                <div class="placeholder-content">
+                  <div class="browser-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                  <p>Browser preview will appear here</p>
+                  <span class="placeholder-hint">Start processing to see live view</span>
+                </div>
+              </div>
+              <div class="browser-loading" id="browserLoading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Launching browser...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Log Section (Bottom) -->
         <div class="activity-section">
           <div class="section-header">
             <span class="section-title">
@@ -1918,6 +2203,8 @@
         }
       } else if (data.type === 'status') {
         updateStatus(data);
+      } else if (data.type === 'frame') {
+        updateBrowserFrame(data.data);
       } else if (data.type === 'variables') {
         updateMemory(data.variables);
       }
@@ -2066,6 +2353,8 @@
 
       const selectedReports = getSelectedReports();
 
+      showBrowserLoading();
+
       // Build workflow list
       const workflows = ['login_and_redirect', 'navigate_to_reports', ...selectedReports];
 
@@ -2165,6 +2454,7 @@
         startBtn.disabled = clients.length === 0;
         stopBtn.disabled = true;
         progressRing.style.display = 'none';
+        hideBrowserFrame();
         if (timelineStages.length > 0) {
           timelineStages.forEach(stage => stage.status = 'completed');
           updateTimeline(timelineStages);
@@ -2318,6 +2608,50 @@
       document.getElementById('activityFeed').style.display = 'none';
       document.getElementById('activityEmpty').style.display = 'flex';
       document.getElementById('logCountBadge').textContent = '0';
+    }
+
+    // Browser Frame
+    function updateBrowserFrame(frameData) {
+      const frame = document.getElementById('browserFrame');
+      const placeholder = document.getElementById('browserPlaceholder');
+      const loading = document.getElementById('browserLoading');
+      const liveIndicator = document.getElementById('liveIndicator');
+      const urlBar = document.getElementById('browserUrl');
+
+      if (frameData) {
+        frame.src = 'data:image/jpeg;base64,' + frameData;
+        frame.style.display = 'block';
+        placeholder.style.display = 'none';
+        loading.style.display = 'none';
+        liveIndicator.classList.add('active');
+        urlBar.textContent = 'Connected to Xero';
+      }
+    }
+
+    function showBrowserLoading() {
+      document.getElementById('browserPlaceholder').style.display = 'none';
+      document.getElementById('browserLoading').style.display = 'flex';
+      document.getElementById('browserUrl').textContent = 'Launching browser...';
+    }
+
+    function hideBrowserFrame() {
+      document.getElementById('browserFrame').style.display = 'none';
+      document.getElementById('browserPlaceholder').style.display = 'flex';
+      document.getElementById('browserLoading').style.display = 'none';
+      document.getElementById('liveIndicator').classList.remove('active');
+      document.getElementById('browserUrl').textContent = 'Ready to connect...';
+    }
+
+    function openFullscreen() {
+      const frame = document.getElementById('browserFrame');
+      if (frame.src) {
+        document.getElementById('fullscreenImage').src = frame.src;
+        document.getElementById('fullscreenOverlay').classList.add('active');
+      }
+    }
+
+    function closeFullscreen() {
+      document.getElementById('fullscreenOverlay').classList.remove('active');
     }
 
     // Tabs
@@ -2614,6 +2948,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closePreview();
+        closeFullscreen();
       }
     });
 
