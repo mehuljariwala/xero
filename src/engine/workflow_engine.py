@@ -565,10 +565,10 @@ class WorkflowEngine:
             for col_info in to_deselect:
                 try:
                     cb = self._page.locator(col_info['selector']).first
-                    await cb.scroll_into_view_if_needed()
-                    await asyncio.sleep(0.05)
-                    await cb.click()
-                    await asyncio.sleep(0.1)
+                    await cb.scroll_into_view_if_needed(timeout=3000)
+                    await asyncio.sleep(0.15)
+                    await cb.click(timeout=3000)
+                    await asyncio.sleep(0.2)
                 except Exception:
                     pass
 
@@ -591,15 +591,13 @@ class WorkflowEngine:
 
             try:
                 if selector in checked_selectors:
-                    # Already checked, skip
                     await self._emit_log("info", f"      ✅ {name} (already selected)")
                 else:
-                    # Need to click to select
                     cb = self._page.locator(selector).first
-                    await cb.scroll_into_view_if_needed()
-                    await asyncio.sleep(0.05)
-                    await cb.click()
-                    await asyncio.sleep(0.1)
+                    await cb.scroll_into_view_if_needed(timeout=3000)
+                    await asyncio.sleep(0.15)
+                    await cb.click(timeout=3000)
+                    await asyncio.sleep(0.2)
                     await self._emit_log("info", f"      ✅ {name}")
                 success_count += 1
             except Exception as e:
