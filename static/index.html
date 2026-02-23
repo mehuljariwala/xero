@@ -3094,9 +3094,27 @@
       });
     })();
 
+    async function loadDefaultClients() {
+      try {
+        const response = await fetch('/api/default-clients');
+        const data = await response.json();
+        if (data.clients && data.clients.length > 0) {
+          clients = data.clients;
+          renderClients();
+          document.getElementById('uploadZone').style.display = 'none';
+          document.getElementById('fileLoaded').style.display = 'flex';
+          document.getElementById('fileName').textContent = data.filename + ' (default)';
+          document.getElementById('startBtn').disabled = false;
+        }
+      } catch (e) {
+        console.log('No default clients available');
+      }
+    }
+
     // Initialize
     checkCredentials();
     connect();
+    loadDefaultClients();
   </script>
 </body>
 </html>

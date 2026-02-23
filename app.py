@@ -89,6 +89,25 @@ async def list_workflows():
     return get_available_workflows()
 
 
+@app.get("/api/default-clients")
+async def get_default_clients():
+    import openpyxl
+    sample_path = Path("sample_clients.xlsx")
+    if not sample_path.exists():
+        return {"clients": [], "filename": None}
+    try:
+        wb = openpyxl.load_workbook(sample_path, read_only=True)
+        ws = wb.active
+        rows = list(ws.iter_rows(values_only=True))
+        wb.close()
+        clients = [str(row[0]).strip() for row in rows[1:] if row[0] and str(row[0]).strip()]
+        if not clients:
+            clients = [str(row[0]).strip() for row in rows if row[0] and str(row[0]).strip()]
+        return {"clients": clients, "filename": sample_path.name}
+    except Exception as e:
+        return {"clients": [], "filename": None, "error": str(e)}
+
+
 @app.get("/api/downloads")
 async def list_downloads(subpath: str = ""):
     downloads_dir = Path("downloads")
