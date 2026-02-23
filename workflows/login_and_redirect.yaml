@@ -58,22 +58,21 @@ steps:
     wait_visible: true
     timeout: 5000
 
-  - id: check_trust_device
-    action: click
-    description: Check 'Trust this device' checkbox if present
-    selectors:
-      - "input[type='checkbox'][name='TrustDevice']"
-      - "label:has-text('Trust this device')"
-      - "input[id='TrustDevice']"
-      - "#xl-form-trust-device"
-    optional: true
-    timeout: 2000
-
   - id: click_login
     action: click
     selectors:
       - "button:has-text('Log in')"
       - "#xl-form-submit"
+    wait_after: 3000
+
+  - id: check_trust_device
+    action: click
+    description: Check 'Trust this device' checkbox if MFA page appears
+    selectors:
+      - "[data-automationid='auth-remembermecheckbox--input']"
+      - "[data-automationid='auth-remembermecheckbox'] input[type='checkbox']"
+    optional: true
+    timeout: 5000
     wait_after: 500
 
   - id: post_login_redirect
@@ -81,7 +80,7 @@ steps:
     patterns:
       - "**/hq.xero.com/**"
       - "**/go.xero.com/**"
-    timeout: 20000
+    timeout: 120000
     on_timeout: check_2fa
     optional: true
 
