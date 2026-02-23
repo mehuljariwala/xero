@@ -1129,7 +1129,7 @@ class WorkflowEngine:
         safe_company = re.sub(r'[<>:"/\\|?*]', '', company_name) if company_name else 'Unknown'
 
         client_folder = safe_company
-        subfolder = ""
+        subfolder = "VAT Folder" if is_vat else ""
 
         if is_vat:
             period_start = self.state.variables.get('vat_return_start_date', '')
