@@ -1879,6 +1879,10 @@
       if (data.type === 'log') {
         addActivityCard(data);
 
+        if (data.message && data.message.includes('report generated')) {
+          loadDownloads(currentDownloadPath);
+        }
+
         if (data.level === 'success' && data.message.startsWith('Completed:')) {
           const workflowName = data.message.replace('Completed:', '').trim();
           const stage = timelineStages.find(s => s.id === workflowName);
@@ -2142,11 +2146,11 @@
         startBtn.disabled = clients.length === 0;
         stopBtn.disabled = true;
         progressRing.style.display = 'none';
-        // Mark all completed when idle
         if (timelineStages.length > 0) {
           timelineStages.forEach(stage => stage.status = 'completed');
           updateTimeline(timelineStages);
         }
+        loadDownloads(currentDownloadPath);
       }
     }
 
