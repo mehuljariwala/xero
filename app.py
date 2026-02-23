@@ -19,7 +19,6 @@ from pydantic import BaseModel
 
 from src.engine.workflow_engine import WorkflowEngine, WorkflowState
 from src.engine.report_generator import WorkflowReportGenerator
-from src.engine.docx_report import generate_docx_report
 
 
 class WebSocketLogHandler:
@@ -449,36 +448,14 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
             await send_status("completed")
             await send_log("success", "All workflows completed successfully")
 
-            # Generate workflow execution report
             master_report.end_workflow("completed", {})
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            report_path = f"downloads/workflow_report_{timestamp}.html"
-            master_report.generate_html_report(report_path)
-            await send_log("info", f"📊 Execution report generated: {report_path}")
-            docx_path = f"downloads/execution_summary_{timestamp}.docx"
-            generate_docx_report(master_report.events, docx_path)
-            await send_log("info", f"📄 Execution summary generated: {docx_path}")
 
     except asyncio.CancelledError:
         await send_log("warning", "Workflow cancelled")
         master_report.end_workflow("cancelled", {})
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_path = f"downloads/workflow_report_{timestamp}.html"
-        master_report.generate_html_report(report_path)
-        await send_log("info", f"📊 Execution report generated: {report_path}")
-        docx_path = f"downloads/execution_summary_{timestamp}.docx"
-        generate_docx_report(master_report.events, docx_path)
-        await send_log("info", f"📄 Execution summary generated: {docx_path}")
     except Exception as e:
         await send_log("error", f"Workflow failed: {str(e)}")
         master_report.end_workflow("failed", {})
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_path = f"downloads/workflow_report_{timestamp}.html"
-        master_report.generate_html_report(report_path)
-        await send_log("info", f"📊 Execution report generated: {report_path}")
-        docx_path = f"downloads/execution_summary_{timestamp}.docx"
-        generate_docx_report(master_report.events, docx_path)
-        await send_log("info", f"📄 Execution summary generated: {docx_path}")
     finally:
         if cdp_session:
             try:
