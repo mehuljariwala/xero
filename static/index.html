@@ -602,54 +602,77 @@
       padding: 0;
     }
 
-    .browser-section {
+    .activity-section {
       flex: 1;
       min-height: 0;
-      padding: 16px;
       display: flex;
       flex-direction: column;
-    }
-
-    .activity-section {
-      height: 220px;
-      border-top: 1px solid var(--border-subtle);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
     }
 
     .section-header {
-      padding: 12px 16px;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border-subtle);
-      background: var(--bg-card);
+      background: var(--bg-deep);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      flex-shrink: 0;
     }
 
     .section-title {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
     }
 
     .section-title svg {
       color: var(--accent-emerald);
     }
 
+    .log-count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      background: var(--accent-emerald-dim);
+      border: 1px solid rgba(5, 150, 105, 0.2);
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0;
+    }
+
+    .section-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .activity-content {
       flex: 1;
       overflow-y: auto;
-      padding: 12px 16px;
+      padding: 16px 20px;
+      scroll-behavior: smooth;
     }
 
     .activity-content::-webkit-scrollbar {
       width: 4px;
+    }
+
+    .activity-content::-webkit-scrollbar-track {
+      background: transparent;
     }
 
     .activity-content::-webkit-scrollbar-thumb {
@@ -661,55 +684,94 @@
     .activity-feed {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .activity-empty {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100%;
+      min-height: 300px;
+      gap: 16px;
     }
 
-    .empty-state {
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px 24px;
-      background: var(--bg-card);
-      border-radius: var(--radius-md);
+      justify-content: center;
       color: var(--text-muted);
     }
 
-    .empty-state svg {
-      width: 24px;
-      height: 24px;
+    .empty-state-icon svg {
+      width: 28px;
+      height: 28px;
       opacity: 0.5;
     }
 
-    .empty-state span {
-      font-size: 0.85rem;
+    .empty-state-text {
+      text-align: center;
     }
 
-    .activity-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      display: flex;
-      gap: 10px;
-      animation: slideIn 0.2s ease;
+    .empty-state-text p {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
     }
 
-    @keyframes slideIn {
+    .empty-state-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    @keyframes cardEnter {
       from {
         opacity: 0;
-        transform: translateX(-10px);
+        transform: translateY(-6px);
       }
       to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
       }
+    }
+
+    .activity-card {
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      animation: cardEnter 0.2s ease forwards;
+      transition: border-color 0.15s ease;
+    }
+
+    .activity-card.level-info {
+      border-left-color: var(--accent-sky);
+      background: linear-gradient(to right, rgba(2, 132, 199, 0.03), transparent 60px);
+    }
+
+    .activity-card.level-success {
+      border-left-color: var(--accent-emerald);
+      background: linear-gradient(to right, rgba(5, 150, 105, 0.04), transparent 60px);
+    }
+
+    .activity-card.level-warning {
+      border-left-color: var(--accent-amber);
+      background: linear-gradient(to right, rgba(217, 119, 6, 0.04), transparent 60px);
+    }
+
+    .activity-card.level-error {
+      border-left-color: var(--accent-rose);
+      background: linear-gradient(to right, rgba(220, 38, 38, 0.04), transparent 60px);
     }
 
     .activity-icon {
@@ -720,6 +782,7 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      margin-top: 1px;
     }
 
     .activity-icon.info {
@@ -743,8 +806,8 @@
     }
 
     .activity-icon svg {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
     }
 
     .activity-body {
@@ -752,192 +815,54 @@
       min-width: 0;
     }
 
-    .activity-header {
+    .activity-meta-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 8px;
+      gap: 12px;
+      margin-bottom: 4px;
     }
 
     .activity-message {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 500;
-      line-height: 1.3;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.45;
+      color: var(--text-primary);
+      word-break: break-word;
     }
 
     .activity-time {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
       flex-shrink: 0;
+      padding-top: 2px;
+      letter-spacing: 0.02em;
     }
 
-    .activity-details {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      font-family: 'JetBrains Mono', monospace;
-      background: var(--bg-deep);
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-top: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .activity-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
     }
 
-    /* Browser Preview */
-    .browser-preview {
-      flex: 1;
+    .activity-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: var(--shadow-card);
-    }
-
-    .browser-chrome {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 16px;
-      background: linear-gradient(to bottom, var(--bg-card), var(--bg-card-hover));
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .browser-dots {
-      display: flex;
-      gap: 6px;
-    }
-
-    .browser-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .browser-dot.red { background: #ff5f57; }
-    .browser-dot.yellow { background: #febc2e; }
-    .browser-dot.green { background: #28c840; }
-
-    .browser-url {
-      flex: 1;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .live-indicator {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: var(--accent-rose);
       border-radius: 4px;
       font-size: 0.65rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: white;
-    }
-
-    .live-indicator.active {
-      display: flex;
-    }
-
-    .live-dot {
-      width: 6px;
-      height: 6px;
-      background: white;
-      border-radius: 50%;
-      animation: blink 1s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .browser-body {
-      flex: 1;
-      min-height: 200px;
-      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .browser-frame {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: none;
-    }
-
-    .browser-placeholder {
-      text-align: center;
-      color: var(--text-muted);
-    }
-
-    .placeholder-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .browser-icon-wrapper {
-      width: 80px;
-      height: 80px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .browser-icon-wrapper svg {
-      width: 36px;
-      height: 36px;
-      color: var(--text-muted);
-    }
-
-    .browser-placeholder p {
-      font-size: 0.95rem;
-      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-secondary);
+      white-space: nowrap;
     }
 
-    .placeholder-hint {
-      font-size: 0.8rem;
+    .activity-chip-key {
       color: var(--text-muted);
-    }
-
-    .browser-loading {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-    }
-
-    .browser-loading p {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      font-weight: 500;
     }
 
     .loading-spinner {
@@ -951,31 +876,6 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-
-    .fullscreen-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-    }
-
-    .fullscreen-btn:hover {
-      background: var(--accent-emerald);
-      border-color: var(--accent-emerald);
-      color: white;
-    }
-
-    .fullscreen-btn svg {
-      width: 14px;
-      height: 14px;
     }
 
     /* Right Panel - Tabs */
@@ -1439,48 +1339,6 @@
       display: block;
     }
 
-    /* Fullscreen overlay */
-    .fullscreen-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.95);
-      z-index: 1000;
-    }
-
-    .fullscreen-overlay.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .fullscreen-overlay img {
-      max-width: 95%;
-      max-height: 95%;
-      object-fit: contain;
-    }
-
-    .fullscreen-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      border: none;
-      border-radius: 50%;
-      background: var(--bg-card);
-      color: var(--text-primary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .fullscreen-close svg {
-      width: 20px;
-      height: 20px;
-    }
-
     /* Progress bar in header */
     .progress-ring {
       width: 36px;
@@ -1752,16 +1610,6 @@
     </div>
   </div>
 
-  <div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
-    <button class="fullscreen-close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    <img id="fullscreenImage" src="" alt="Browser View">
-  </div>
-
   <!-- File Preview Modal -->
   <div class="preview-overlay" id="previewOverlay">
     <div class="preview-modal">
@@ -1885,80 +1733,36 @@
         </div>
       </div>
 
-      <!-- Middle Panel - Browser & Activity -->
+      <!-- Middle Panel - Activity Log -->
       <div class="panel middle-panel">
-        <!-- Browser Preview Section (Top) -->
-        <div class="browser-section">
-          <div class="browser-preview" id="browserPreview">
-            <div class="browser-chrome">
-              <div class="browser-dots">
-                <div class="browser-dot red"></div>
-                <div class="browser-dot yellow"></div>
-                <div class="browser-dot green"></div>
-              </div>
-              <div class="browser-url" id="browserUrl">Ready to connect...</div>
-              <div class="live-indicator" id="liveIndicator">
-                <div class="live-dot"></div>
-                LIVE
-              </div>
-              <button class="fullscreen-btn" onclick="openFullscreen()" title="Fullscreen">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <polyline points="9 21 3 21 3 15"></polyline>
-                  <line x1="21" y1="3" x2="14" y2="10"></line>
-                  <line x1="3" y1="21" x2="10" y2="14"></line>
-                </svg>
-              </button>
-            </div>
-            <div class="browser-body">
-              <img class="browser-frame" id="browserFrame" alt="Browser View">
-              <div class="browser-placeholder" id="browserPlaceholder">
-                <div class="placeholder-content">
-                  <div class="browser-icon-wrapper">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                      <line x1="8" y1="21" x2="16" y2="21"></line>
-                      <line x1="12" y1="17" x2="12" y2="21"></line>
-                    </svg>
-                  </div>
-                  <p>Browser preview will appear here</p>
-                  <span class="placeholder-hint">Start processing to see live view</span>
-                </div>
-              </div>
-              <div class="browser-loading" id="browserLoading" style="display: none;">
-                <div class="loading-spinner"></div>
-                <p>Launching browser...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activity Log Section (Bottom) -->
         <div class="activity-section">
           <div class="section-header">
             <span class="section-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
               </svg>
               Activity Log
+              <span class="log-count-badge" id="logCountBadge">0</span>
             </span>
-            <button class="action-btn" onclick="clearActivity()" title="Clear">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-            </button>
+            <div class="section-controls">
+              <button class="action-btn" onclick="clearActivity()" title="Clear log">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="activity-content" id="activityPanel">
             <div class="activity-empty" id="activityEmpty">
-              <div class="empty-state">
+              <div class="empty-state-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                 </svg>
-                <span>Waiting for activity...</span>
+              </div>
+              <div class="empty-state-text">
+                <p>No activity yet</p>
+                <span>Events will appear here as the workflow runs</span>
               </div>
             </div>
             <div class="activity-feed" id="activityFeed" style="display: none;"></div>
@@ -2075,7 +1879,6 @@
       if (data.type === 'log') {
         addActivityCard(data);
 
-        // Update timeline when workflow completes or fails
         if (data.level === 'success' && data.message.startsWith('Completed:')) {
           const workflowName = data.message.replace('Completed:', '').trim();
           const stage = timelineStages.find(s => s.id === workflowName);
@@ -2092,8 +1895,6 @@
         }
       } else if (data.type === 'status') {
         updateStatus(data);
-      } else if (data.type === 'frame') {
-        updateBrowserFrame(data.data);
       } else if (data.type === 'variables') {
         updateMemory(data.variables);
       }
@@ -2242,9 +2043,6 @@
 
       const selectedReports = getSelectedReports();
 
-      // Show loading state
-      showBrowserLoading();
-
       // Build workflow list
       const workflows = ['login_and_redirect', 'navigate_to_reports', ...selectedReports];
 
@@ -2287,12 +2085,6 @@
         reports: selectedReports,
         workflows: workflows
       }));
-    }
-
-    function showBrowserLoading() {
-      document.getElementById('browserPlaceholder').style.display = 'none';
-      document.getElementById('browserLoading').style.display = 'flex';
-      document.getElementById('browserUrl').textContent = 'Launching browser...';
     }
 
     function stopWorkflow() {
@@ -2350,8 +2142,6 @@
         startBtn.disabled = clients.length === 0;
         stopBtn.disabled = true;
         progressRing.style.display = 'none';
-        hideBrowserFrame();
-
         // Mark all completed when idle
         if (timelineStages.length > 0) {
           timelineStages.forEach(stage => stage.status = 'completed');
@@ -2361,9 +2151,12 @@
     }
 
     // Activity Feed
+    let logCount = 0;
+
     function addActivityCard(data) {
       const empty = document.getElementById('activityEmpty');
       const feed = document.getElementById('activityFeed');
+      const panel = document.getElementById('activityPanel');
 
       if (empty.style.display !== 'none') {
         empty.style.display = 'none';
@@ -2377,77 +2170,49 @@
         error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>'
       };
 
+      const level = data.level || 'info';
       const card = document.createElement('div');
-      card.className = 'activity-card';
+      card.className = `activity-card level-${level}`;
 
-      let detailsHtml = '';
+      let chipsHtml = '';
       if (data.data && Object.keys(data.data).length > 0) {
-        detailsHtml = `<div class="activity-details">${Object.entries(data.data).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join(' | ')}</div>`;
+        const chips = Object.entries(data.data).map(([k, v]) => {
+          const displayVal = typeof v === 'object' ? JSON.stringify(v) : v;
+          return `<span class="activity-chip"><span class="activity-chip-key">${k}</span>${displayVal}</span>`;
+        }).join('');
+        chipsHtml = `<div class="activity-chips">${chips}</div>`;
       }
 
       card.innerHTML = `
-        <div class="activity-icon ${data.level}">
-          ${icons[data.level] || icons.info}
+        <div class="activity-icon ${level}">
+          ${icons[level] || icons.info}
         </div>
         <div class="activity-body">
-          <div class="activity-header">
+          <div class="activity-meta-row">
             <span class="activity-message">${data.message}</span>
             <span class="activity-time">${data.timestamp}</span>
           </div>
-          ${detailsHtml}
+          ${chipsHtml}
         </div>
       `;
 
       feed.insertBefore(card, feed.firstChild);
+      panel.scrollTop = 0;
 
-      // Limit cards
+      logCount++;
+      document.getElementById('logCountBadge').textContent = logCount;
+
       while (feed.children.length > 50) {
         feed.removeChild(feed.lastChild);
       }
     }
 
     function clearActivity() {
+      logCount = 0;
       document.getElementById('activityFeed').innerHTML = '';
       document.getElementById('activityFeed').style.display = 'none';
       document.getElementById('activityEmpty').style.display = 'flex';
-    }
-
-    // Browser Frame
-    function updateBrowserFrame(frameData) {
-      const frame = document.getElementById('browserFrame');
-      const placeholder = document.getElementById('browserPlaceholder');
-      const loading = document.getElementById('browserLoading');
-      const liveIndicator = document.getElementById('liveIndicator');
-      const urlBar = document.getElementById('browserUrl');
-
-      if (frameData) {
-        frame.src = 'data:image/jpeg;base64,' + frameData;
-        frame.style.display = 'block';
-        placeholder.style.display = 'none';
-        loading.style.display = 'none';
-        liveIndicator.classList.add('active');
-        urlBar.textContent = 'Connected to Xero';
-      }
-    }
-
-    function hideBrowserFrame() {
-      document.getElementById('browserFrame').style.display = 'none';
-      document.getElementById('browserPlaceholder').style.display = 'flex';
-      document.getElementById('browserLoading').style.display = 'none';
-      document.getElementById('liveIndicator').classList.remove('active');
-      document.getElementById('browserUrl').textContent = 'Ready to connect...';
-    }
-
-    function openFullscreen() {
-      const frame = document.getElementById('browserFrame');
-      if (frame.src) {
-        document.getElementById('fullscreenImage').src = frame.src;
-        document.getElementById('fullscreenOverlay').classList.add('active');
-      }
-    }
-
-    function closeFullscreen() {
-      document.getElementById('fullscreenOverlay').classList.remove('active');
+      document.getElementById('logCountBadge').textContent = '0';
     }
 
     // Tabs
@@ -2741,11 +2506,9 @@
       }
     });
 
-    // Keyboard shortcut for fullscreen
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closePreview();
-        closeFullscreen();
       }
     });
 
