@@ -65,6 +65,7 @@ steps:
       - "[data-automationid='report-settings-date-option-End of last financial year']"
       - "[role='option']:has-text('End of last financial year')"
     timeout: 5000
+    wait_after: 500
 
   - id: select_end_of_last_financial_year
     action: click
