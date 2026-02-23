@@ -1101,18 +1101,18 @@ class WorkflowEngine:
         return None
 
     def _get_report_prefix(self, workflow_name: str) -> tuple[str, str, bool]:
-        """Returns (number_prefix, short_name, is_vat) for a workflow."""
+        """Returns (number_prefix, full_name, is_vat) for a workflow."""
         report_map = {
-            'trial_balance_report': ('1', 'TB', False),
-            'profit_and_loss': ('2', 'P&L', False),
-            'aged_receivables_detail': ('3', 'AR', False),
-            'aged_payables_detail': ('4', 'AP', False),
-            'account_transactions': ('5', 'AT', False),
-            'receivable_invoice_detail': ('6', 'RID', False),
-            'payable_invoice_detail': ('7', 'PID', False),
+            'trial_balance_report': ('1', 'Trial Balance', False),
+            'profit_and_loss': ('2', 'Profit and Loss', False),
+            'aged_receivables_detail': ('3', 'Aged Receivables Detail', False),
+            'aged_payables_detail': ('4', 'Aged Payables Detail', False),
+            'account_transactions': ('5', 'Account Transactions', False),
+            'receivable_invoice_detail': ('6', 'Receivable Invoice Detail', False),
+            'payable_invoice_detail': ('7', 'Payable Invoice Detail', False),
             'vat_returns': ('1', 'VAT', True),
             'vat_returns_export': ('1', 'VAT', True),
-            'get_financial_year_end': ('', 'FYE', False),
+            'get_financial_year_end': ('', 'Financial Year End', False),
         }
         return report_map.get(workflow_name, ('', workflow_name, False))
 
@@ -1127,11 +1127,7 @@ class WorkflowEngine:
 
     def _format_download_filename(self, workflow_name: str, company_name: str, file_ext: str) -> tuple[str, str, str]:
         """Generate filename and folder based on workflow type."""
-        now = datetime.now()
-        date_for_file = now.strftime('%d-%b-%Y')     # 24-Jan-2026
-        timestamp = now.strftime('%H-%M-%S')         # 14-30-52
-
-        num_prefix, short_name, is_vat = self._get_report_prefix(workflow_name)
+        num_prefix, report_name, is_vat = self._get_report_prefix(workflow_name)
         safe_company = re.sub(r'[<>:"/\\|?*]', '', company_name) if company_name else 'Unknown'
 
         client_folder = safe_company
@@ -1145,14 +1141,14 @@ class WorkflowEngine:
                 start_compact = self._format_date_compact(period_start)
                 end_compact = self._format_date_compact(period_end)
                 period_str = f"{start_compact}-{end_compact}"
-                new_filename = f"{num_prefix} VAT_{period_str}_{safe_company}_{date_for_file}_{timestamp}{file_ext}"
+                new_filename = f"{num_prefix} VAT_{period_str}_{safe_company}{file_ext}"
             else:
-                new_filename = f"{num_prefix} VAT_{safe_company}_{date_for_file}_{timestamp}{file_ext}"
+                new_filename = f"{num_prefix} VAT_{safe_company}{file_ext}"
         else:
             if num_prefix:
-                new_filename = f"{num_prefix} {short_name}_{safe_company}_{date_for_file}_{timestamp}{file_ext}"
+                new_filename = f"{num_prefix} {report_name}_{safe_company}{file_ext}"
             else:
-                new_filename = f"{short_name}_{safe_company}_{date_for_file}_{timestamp}{file_ext}"
+                new_filename = f"{report_name}_{safe_company}{file_ext}"
 
         return new_filename, client_folder, subfolder
 
