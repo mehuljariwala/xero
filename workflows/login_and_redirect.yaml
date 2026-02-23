@@ -58,6 +58,17 @@ steps:
     wait_visible: true
     timeout: 5000
 
+  - id: check_trust_device
+    action: click
+    description: Check 'Trust this device' checkbox if present
+    selectors:
+      - "input[type='checkbox'][name='TrustDevice']"
+      - "label:has-text('Trust this device')"
+      - "input[id='TrustDevice']"
+      - "#xl-form-trust-device"
+    optional: true
+    timeout: 2000
+
   - id: click_login
     action: click
     selectors:

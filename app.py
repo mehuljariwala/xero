@@ -374,7 +374,29 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
                     engine.state.variables["selected_client"] = client_name
 
                 state = await engine.run(context=context, page=page)
-                page = engine.page
+                new_page = engine.page
+                if new_page != page:
+                    page = new_page
+                    try:
+                        if cdp_session:
+                            await cdp_session.send("Page.stopScreencast")
+                        cdp_session = await page.context.new_cdp_session(page)
+                        await cdp_session.send("Browser.setDownloadBehavior", {
+                            "behavior": "allow",
+                            "downloadPath": str(downloads_dir),
+                            "eventsEnabled": True
+                        })
+                        cdp_session.on("Page.screencastFrame", lambda params: asyncio.create_task(handle_screencast_frame(params)))
+                        await cdp_session.send("Page.startScreencast", {
+                            "format": "jpeg",
+                            "quality": 60,
+                            "maxWidth": 1280,
+                            "maxHeight": 800,
+                            "everyNthFrame": 2
+                        })
+                        await send_log("info", "Screencast re-attached to new tab")
+                    except Exception as e:
+                        await send_log("warning", f"Screencast re-attach failed: {str(e)}")
                 master_report.events.extend(engine.report.events)
 
                 if state.variables:
