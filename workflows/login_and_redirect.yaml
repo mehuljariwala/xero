@@ -97,7 +97,9 @@ steps:
     selectors:
       - "input[placeholder='Search clients']"
       - "button:has-text('Go to Xero')"
-    timeout: 20000
+      - "[data-automationid='client-list']"
+      - ".xui-table"
+    timeout: 40000
     optional: false
 
   - id: search_for_client

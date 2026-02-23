@@ -310,6 +310,11 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
             headless=bool(is_production),
             viewport={"width": 1280, "height": 800},
             accept_downloads=True,
+            args=[
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+            ],
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         )
         page = context.pages[0] if context.pages else await context.new_page()
 
@@ -317,6 +322,7 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
             cdp_session = await page.context.new_cdp_session(page)
             await cdp_session.send("Browser.setDownloadBehavior", {
                 "behavior": "allow",
+                "downloadPath": str(downloads_dir),
                 "eventsEnabled": True
             })
             cdp_session.on("Page.screencastFrame", lambda params: asyncio.create_task(handle_screencast_frame(params)))

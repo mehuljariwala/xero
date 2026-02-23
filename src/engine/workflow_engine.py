@@ -632,7 +632,14 @@ class WorkflowEngine:
             except Exception:
                 continue
 
-        await self._emit_log("error", f"   ❌ Element not found within timeout")
+        current_url = self._page.url if self._page else "unknown"
+        await self._emit_log("error", f"   ❌ Element not found within timeout (URL: {current_url})")
+        try:
+            screenshot_path = f"downloads/debug_{step.get('id', 'unknown')}.png"
+            await self._page.screenshot(path=screenshot_path)
+            await self._emit_log("warning", f"   Debug screenshot saved: {screenshot_path}")
+        except Exception:
+            pass
         if not step.get('optional'):
             raise StepFailedError(f"Timeout waiting for selector: {selectors}")
         return step.get('on_timeout')
