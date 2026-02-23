@@ -135,7 +135,11 @@ steps:
     action: wait_for_url
     patterns:
       - "**/go.xero.com/**"
-    timeout: 15000
+      - "**/app.xero.com/**"
+      - "**/reporting.xero.com/**"
+      - "**xero.com/organisationlogin/**"
+      - "**xero.com/Dashboard/**"
+    timeout: 30000
 
   - id: verify_dashboard
     action: capture_state
