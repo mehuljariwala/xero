@@ -374,6 +374,7 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
                     engine.state.variables["selected_client"] = client_name
 
                 state = await engine.run(context=context, page=page)
+                page = engine.page
                 master_report.events.extend(engine.report.events)
 
                 if state.variables:

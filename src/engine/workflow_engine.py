@@ -250,10 +250,18 @@ class WorkflowEngine:
                 resolved_selector = self._resolve_variable(selector)
                 element = self._page.locator(resolved_selector).first
                 if await element.is_visible(timeout=5000):
-                    await element.click()
-                    if step.get('wait_after'):
-                        await asyncio.sleep(step['wait_after'] / 1000)
-                    await self._emit_log("info", f"   ✅ Click successful")
+                    if step.get('expect_popup') or step.get('expect_new_tab'):
+                        async with self._page.context.expect_page(timeout=10000) as new_page_info:
+                            await element.click()
+                        new_page = await new_page_info.value
+                        await new_page.wait_for_load_state('domcontentloaded')
+                        self._page = new_page
+                        await self._emit_log("info", f"   ✅ Click opened new tab: {new_page.url}")
+                    else:
+                        await element.click()
+                        if step.get('wait_after'):
+                            await asyncio.sleep(step['wait_after'] / 1000)
+                        await self._emit_log("info", f"   ✅ Click successful")
                     return None
             except Exception:
                 continue

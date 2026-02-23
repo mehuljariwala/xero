@@ -130,6 +130,7 @@ steps:
       - "a:has-text('Go to Xero')"
     wait_visible: true
     timeout: 5000
+    expect_new_tab: true
 
   - id: wait_for_client_dashboard
     action: wait_for_url
@@ -140,6 +141,7 @@ steps:
       - "**xero.com/organisationlogin/**"
       - "**xero.com/Dashboard/**"
     timeout: 30000
+    optional: true
 
   - id: verify_dashboard
     action: capture_state
