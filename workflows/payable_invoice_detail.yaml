@@ -138,6 +138,28 @@ steps:
     key: Escape
     wait_after: 300
 
+  - id: open_grouping_dropdown
+    action: click
+    description: Open Grouping/Summarising dropdown
+    selectors:
+      - "[data-automationid='report-settings-group-by-button']"
+      - "button:has-text('Group by')"
+      - "button:has-text('Summarise by')"
+    wait_after: 500
+    optional: true
+    timeout: 5000
+
+  - id: select_grouping_none
+    action: click
+    description: Select None for grouping
+    selectors:
+      - "#report-settings-group-by-column-none"
+      - "li#report-settings-group-by-column-none button"
+      - "li:has-text('None') button"
+    wait_after: 500
+    optional: true
+    timeout: 3000
+
   - id: click_filter_button
     action: click
     description: Open filter modal
