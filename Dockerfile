@@ -20,4 +20,4 @@ RUN mkdir -p downloads browser_data
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1280x800x24 -nolisten tcp & export DISPLAY=:99 && uvicorn app:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "rm -f /tmp/.X99-lock && Xvfb :99 -screen 0 1280x800x24 -nolisten tcp & export DISPLAY=:99 && sleep 1 && uvicorn app:app --host 0.0.0.0 --port 8000"]
