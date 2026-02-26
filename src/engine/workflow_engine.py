@@ -41,6 +41,10 @@ class WorkflowEngine:
         self.variable_callback = None
         self.report = WorkflowReportGenerator()
         self.generate_report = True
+        self.speed_factor = float(os.getenv("SPEED_FACTOR", "0.4"))
+
+    async def _wait(self, ms: float):
+        await asyncio.sleep(max(ms * self.speed_factor, 50) / 1000)
 
     async def _emit_log(self, level: str, message: str, **kwargs):
         self.log.info(message, **kwargs) if level == "info" else (
@@ -169,7 +173,7 @@ class WorkflowEngine:
 
         try:
             response = await self._page.goto(url, wait_until=wait_until, timeout=timeout)
-            await asyncio.sleep(step.get('wait_after', 1000) / 1000)
+            await self._wait(step.get('wait_after', 1000))
 
             new_url = self._page.url
             await self._emit_log("info", f"   📍 Now at: {new_url}")
@@ -203,7 +207,7 @@ class WorkflowEngine:
                 await element.fill(value)
                 await self._emit_log("info", f"   ✅ Input filled successfully")
                 if step.get('wait_after'):
-                    await asyncio.sleep(step['wait_after'] / 1000)
+                    await self._wait(step['wait_after'])
                 return None
             except Exception:
                 continue
@@ -222,7 +226,7 @@ class WorkflowEngine:
             await self._page.keyboard.press(key)
             await self._emit_log("info", f"   ✅ Key pressed successfully")
             if step.get('wait_after'):
-                await asyncio.sleep(step['wait_after'] / 1000)
+                await self._wait(step['wait_after'])
             return None
         except Exception as e:
             await self._emit_log("error", f"   ❌ Failed to press key: {str(e)}")
@@ -260,7 +264,7 @@ class WorkflowEngine:
                     else:
                         await element.click()
                         if step.get('wait_after'):
-                            await asyncio.sleep(step['wait_after'] / 1000)
+                            await self._wait(step['wait_after'])
                         await self._emit_log("info", f"   ✅ Click successful")
                     return None
             except Exception:
@@ -438,7 +442,7 @@ class WorkflowEngine:
                     else:
                         await self._emit_log("info", f"   ✅ Checkbox already {state_text}")
                     if step.get('wait_after'):
-                        await asyncio.sleep(step['wait_after'] / 1000)
+                        await self._wait(step['wait_after'])
                     return None
             except Exception:
                 continue
@@ -484,7 +488,7 @@ class WorkflowEngine:
         await self._emit_log("info", f"   ✅ {success_count} options set, {failed_count} failed")
 
         if step.get('wait_after'):
-            await asyncio.sleep(step['wait_after'] / 1000)
+            await self._wait(step['wait_after'])
         return None
 
     async def _execute_deselect_all_columns(self, step: dict) -> str | None:
@@ -528,7 +532,7 @@ class WorkflowEngine:
             await self._emit_log("info", f"   ✅ No columns to deselect")
 
         if step.get('wait_after'):
-            await asyncio.sleep(step['wait_after'] / 1000)
+            await self._wait(step['wait_after'])
         return None
 
     async def _execute_select_columns(self, step: dict) -> str | None:
@@ -607,7 +611,7 @@ class WorkflowEngine:
         await self._emit_log("info", f"   📊 {success_count}/{len(columns)} columns selected")
 
         if step.get('wait_after'):
-            await asyncio.sleep(step['wait_after'] / 1000)
+            await self._wait(step['wait_after'])
 
         if failed_count > 0 and not step.get('optional'):
             raise StepFailedError(f"Failed to select {failed_count} columns")
@@ -1124,12 +1128,12 @@ class WorkflowEngine:
         return date_str.replace(' ', '').replace('-', '')
 
     def _format_download_filename(self, workflow_name: str, company_name: str, file_ext: str) -> tuple[str, str, str]:
-        """Generate filename and folder based on workflow type."""
         num_prefix, report_name, is_vat = self._get_report_prefix(workflow_name)
         safe_company = re.sub(r'[<>:"/\\|?*]', '', company_name) if company_name else 'Unknown'
 
-        client_folder = safe_company
-        subfolder = "VAT Folder" if is_vat else ""
+        date_folder = datetime.now().strftime('%d-%b-%Y')
+        client_folder = f"{date_folder}/{safe_company}"
+        subfolder = "VAT" if is_vat else ""
 
         if is_vat:
             period_start = self.state.variables.get('vat_return_start_date', '')
@@ -1139,14 +1143,14 @@ class WorkflowEngine:
                 start_compact = self._format_date_compact(period_start)
                 end_compact = self._format_date_compact(period_end)
                 period_str = f"{start_compact}-{end_compact}"
-                new_filename = f"{num_prefix} VAT_{period_str}_{safe_company}{file_ext}"
+                new_filename = f"{num_prefix} VAT_{period_str}{file_ext}"
             else:
-                new_filename = f"{num_prefix} VAT_{safe_company}{file_ext}"
+                new_filename = f"{num_prefix} VAT{file_ext}"
         else:
             if num_prefix:
-                new_filename = f"{num_prefix} {report_name}_{safe_company}{file_ext}"
+                new_filename = f"{num_prefix} {report_name}{file_ext}"
             else:
-                new_filename = f"{report_name}_{safe_company}{file_ext}"
+                new_filename = f"{report_name}{file_ext}"
 
         return new_filename, client_folder, subfolder
 
@@ -1249,7 +1253,7 @@ class WorkflowEngine:
             else:
                 await self._emit_log("info", f"   ✅ Script executed successfully")
             if step.get('wait_after'):
-                await asyncio.sleep(step['wait_after'] / 1000)
+                await self._wait(step['wait_after'])
             return None
         except Exception as e:
             await self._emit_log("error", f"   ❌ Script execution failed: {str(e)}")

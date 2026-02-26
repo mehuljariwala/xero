@@ -603,19 +603,15 @@
     }
 
     .browser-section {
-      flex: 1;
-      min-height: 0;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
+      display: none;
     }
 
     .activity-section {
-      height: 220px;
-      border-top: 1px solid var(--border-subtle);
+      flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
-      flex-shrink: 0;
+      border-top: none;
     }
 
     .section-header {
@@ -680,7 +676,7 @@
     .activity-feed {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
     }
 
     .activity-empty {
@@ -891,6 +887,213 @@
       height: 1px;
       background: var(--border-subtle);
       margin: 8px 0;
+    }
+
+    /* Workflow Progress Bar */
+    .workflow-progress {
+      padding: 10px 20px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      flex-shrink: 0;
+    }
+
+    .progress-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .progress-workflow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70%;
+    }
+
+    .progress-step {
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .progress-bar {
+      height: 3px;
+      background: var(--bg-elevated);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-sky), var(--accent-violet));
+      border-radius: 2px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Step Cards */
+    .step-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-sky);
+      border-radius: var(--radius-sm);
+      animation: cardEnter 0.18s ease forwards;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .step-card:hover {
+      background: var(--bg-card-hover);
+      border-left-color: var(--accent-sky);
+    }
+
+    .step-card.step-done {
+      border-left-color: var(--accent-emerald);
+      opacity: 0.85;
+    }
+
+    .step-card.step-error {
+      border-left-color: var(--accent-rose);
+      background: var(--accent-rose-dim);
+    }
+
+    .step-card.step-warning {
+      border-left-color: var(--accent-amber);
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+      background: var(--accent-sky);
+    }
+
+    .step-card.step-done .step-dot {
+      background: var(--accent-emerald);
+      box-shadow: 0 0 6px rgba(5, 150, 105, 0.4);
+    }
+
+    .step-card.step-error .step-dot {
+      background: var(--accent-rose);
+      box-shadow: 0 0 6px rgba(220, 38, 38, 0.4);
+    }
+
+    .step-card.step-warning .step-dot {
+      background: var(--accent-amber);
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-desc {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .step-card.step-error .step-desc {
+      color: var(--accent-rose);
+    }
+
+    .step-action-chip {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 5px;
+      padding: 1px 7px;
+      background: var(--bg-elevated);
+      border-radius: 3px;
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .step-time {
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      padding-top: 3px;
+      opacity: 0.6;
+    }
+
+    .step-card:hover .step-time {
+      opacity: 1;
+    }
+
+    /* Download event card */
+    .download-event-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.07), rgba(5, 150, 105, 0.03));
+      border: 1px solid rgba(5, 150, 105, 0.2);
+      border-left: 3px solid var(--accent-emerald);
+      border-radius: var(--radius-sm);
+      animation: cardEnter 0.2s ease forwards;
+    }
+
+    .download-event-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--accent-emerald-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent-emerald);
+    }
+
+    .download-event-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .download-event-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .download-event-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-emerald);
+      margin-bottom: 1px;
+    }
+
+    .download-event-name {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .download-event-time {
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-emerald);
+      opacity: 0.6;
+      flex-shrink: 0;
     }
 
     /* Browser Preview */
@@ -1279,61 +1482,241 @@
     }
 
     /* Downloads Tab */
-    .downloads-path {
-      padding: 10px 12px;
+    .downloads-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 10px;
       background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      min-height: 34px;
+    }
+
+    .breadcrumb-segment {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .breadcrumb-segment:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .breadcrumb-segment.active {
+      color: var(--text-muted);
+      cursor: default;
+      font-weight: 400;
+    }
+
+    .breadcrumb-segment.active:hover {
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .breadcrumb-chevron {
+      color: var(--text-muted);
+      flex-shrink: 0;
+      opacity: 0.5;
+    }
+
+    .breadcrumb-chevron svg {
+      width: 10px;
+      height: 10px;
+      display: block;
+    }
+
+    .downloads-summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2px 8px;
+    }
+
+    .downloads-summary {
       font-size: 0.7rem;
       color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    .clear-downloads-btn {
+      font-family: inherit;
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--accent-rose);
+      background: var(--accent-rose-dim);
+      border: none;
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .clear-downloads-btn:hover {
+      background: var(--accent-rose);
+      color: white;
+    }
+
+    .download-all-btn {
+      font-family: inherit;
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--accent-emerald);
+      background: var(--accent-emerald-dim);
+      border: none;
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .download-all-btn:hover {
+      background: var(--accent-emerald);
+      color: white;
+    }
+
+    .excel-preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.7rem;
       font-family: 'JetBrains Mono', monospace;
-      margin-bottom: 12px;
+    }
+
+    .excel-preview-table th {
+      background: var(--bg-elevated);
+      padding: 6px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-medium);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .excel-preview-table td {
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .excel-preview-table tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    .excel-sheet-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 8px 0;
+      overflow-x: auto;
+    }
+
+    .excel-sheet-tab {
+      font-family: inherit;
+      font-size: 0.65rem;
+      padding: 4px 10px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .excel-sheet-tab.active {
+      background: var(--accent-emerald-dim);
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+      font-weight: 600;
     }
 
     .downloads-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .download-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px;
+      gap: 10px;
+      padding: 9px 10px;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: border-color 0.15s ease, background 0.15s ease;
     }
 
     .download-item:hover {
       border-color: var(--border-medium);
+      background: var(--bg-card-hover);
     }
 
     .download-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
-    .download-icon.file {
+    .download-icon.type-xlsx {
+      background: rgba(5, 150, 105, 0.1);
+      color: var(--accent-emerald);
+    }
+
+    .download-icon.type-pdf {
+      background: var(--accent-rose-dim);
+      color: var(--accent-rose);
+    }
+
+    .download-icon.type-docx {
       background: var(--accent-sky-dim);
       color: var(--accent-sky);
     }
 
-    .download-icon.folder {
-      background: var(--accent-amber-dim);
+    .download-icon.type-html {
+      background: rgba(217, 119, 6, 0.1);
       color: var(--accent-amber);
     }
 
+    .download-icon.type-zip {
+      background: var(--accent-violet-dim);
+      color: var(--accent-violet);
+    }
+
+    .download-icon.type-folder {
+      background: rgba(217, 119, 6, 0.1);
+      color: var(--accent-amber);
+    }
+
+    .download-icon.type-file {
+      background: var(--accent-sky-dim);
+      color: var(--accent-sky);
+    }
+
     .download-icon svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
     }
 
     .download-info {
@@ -1341,24 +1724,68 @@
       min-width: 0;
     }
 
+    .download-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .report-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+      background: var(--accent-emerald-dim);
+      color: var(--accent-emerald);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
     .download-name {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 500;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--text-primary);
+    }
+
+    .download-name-link {
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: color 0.15s ease;
+    }
+
+    .download-name-link:hover {
+      color: var(--accent-emerald);
     }
 
     .download-meta {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .download-meta-sep {
+      opacity: 0.4;
     }
 
     .download-actions {
       display: flex;
       gap: 4px;
       opacity: 0;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.15s ease;
+      flex-shrink: 0;
     }
 
     .download-item:hover .download-actions {
@@ -1366,17 +1793,17 @@
     }
 
     .action-btn {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       background: var(--bg-elevated);
       color: var(--text-secondary);
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
 
     .action-btn:hover {
@@ -1386,11 +1813,12 @@
 
     .action-btn.delete:hover {
       background: var(--accent-rose);
+      color: white;
     }
 
     .action-btn svg {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
     }
 
     .downloads-empty {
@@ -1797,20 +2225,6 @@
       font-size: 0.85rem;
     }
 
-    .download-name-link {
-      font-size: 0.85rem;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      cursor: pointer;
-      color: var(--text-primary);
-      transition: color 0.2s ease;
-    }
-
-    .download-name-link:hover {
-      color: var(--accent-emerald);
-    }
   </style>
 </head>
 <body>
@@ -2057,6 +2471,15 @@
               </button>
             </div>
           </div>
+          <div class="workflow-progress" id="workflowProgress" style="display:none;">
+            <div class="progress-info">
+              <span class="progress-workflow" id="progressWorkflow"></span>
+              <span class="progress-step" id="progressStep"></span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
           <div class="activity-content" id="activityPanel">
             <div class="activity-empty" id="activityEmpty">
               <div class="empty-state-icon">
@@ -2109,7 +2532,16 @@
 
           <!-- Downloads Tab -->
           <div class="tab-content" id="downloadsTab">
-            <div class="downloads-path" id="downloadsPath">/downloads</div>
+            <nav class="downloads-breadcrumb" id="downloadsBreadcrumb">
+              <span class="breadcrumb-segment active">Downloads</span>
+            </nav>
+            <div class="downloads-summary-row" id="downloadsSummaryRow" style="display:none;">
+              <div class="downloads-summary" id="downloadsSummary"></div>
+              <div style="display:flex;gap:4px;">
+                <button class="download-all-btn" onclick="downloadAllAsZip()" title="Download all as ZIP">Download All</button>
+                <button class="clear-downloads-btn" onclick="clearAllDownloads()" title="Clear all downloads">Clear All</button>
+              </div>
+            </div>
             <div class="downloads-list" id="downloadsList">
               <div class="downloads-empty">Loading...</div>
             </div>
@@ -2464,6 +2896,8 @@
     }
 
     let logCount = 0;
+    let workflowStepCount = 0;
+    let currentWorkflowName = '';
 
     function stripEmoji(text) {
       return text.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{200D}\u{20E3}\u{FE0F}]/gu, '').replace(/^\s+/, '').replace(/\s{2,}/g, ' ');
@@ -2471,6 +2905,16 @@
 
     function classifyMessage(msg, level) {
       const m = msg.toLowerCase();
+      if (!msg.trim()) return 'skip';
+      if (m.includes('\u2554') || m.includes('\u2551') || m.includes('\u255a') || m.includes('\u2557') || m.includes('\u255d')) return 'skip';
+      if (m.includes('navigating from:')) return 'skip';
+      if (m.includes('now at:') || m.includes('after reload:')) return 'skip';
+      if (m.includes('page loaded successfully') || m.includes('page ready')) return 'skip';
+      if (m.includes('input filled successfully')) return 'skip';
+      if (m.includes('click successful')) return 'skip';
+      if (m.includes('key pressed successfully')) return 'skip';
+      if (m.includes('state captured')) return 'skip';
+      if (m.includes('connected to xero')) return 'skip';
       if (m.includes('starting workflow chain')) return 'chain-start';
       if (m.match(/running workflow \d+\/\d+/)) return 'workflow-start';
       if (m.includes('workflow chain finished')) return 'chain-end';
@@ -2478,9 +2922,10 @@
       if (m.includes('all reports completed for')) return 'client-complete';
       if (m.includes('processing client')) return 'client-start';
       if (m.includes('report generated') || m.includes('summary generated')) return 'report';
+      if (m.includes('file downloaded') || m.includes('saved to')) return 'download-complete';
       if (m.includes('workflow failed') || m.includes('login/client selection failed')) return 'fatal-error';
-      if (m.includes('\u2554') || m.includes('\u2551') || m.includes('\u255a') || m.includes('\u2557') || m.includes('\u255d')) return 'skip';
-      if (!msg.trim()) return 'skip';
+      const stripped = stripEmoji(msg);
+      if (stripped.trimStart().startsWith('\u25b6')) return 'step';
       return 'log';
     }
 
@@ -2531,6 +2976,84 @@
       return el;
     }
 
+    function inferActionChip(text) {
+      const t = text.toLowerCase();
+      if (t.includes('click') || t.includes('select') || t.includes('press')) return 'click';
+      if (t.includes('fill') || t.includes('type') || t.includes('enter') || t.includes('input')) return 'fill';
+      if (t.includes('wait') || t.includes('delay')) return 'wait';
+      if (t.includes('navigat') || t.includes('redirect') || t.includes('open')) return 'navigate';
+      if (t.includes('download') || t.includes('export') || t.includes('generat')) return 'download';
+      if (t.includes('login') || t.includes('sign in') || t.includes('authenticat')) return 'auth';
+      if (t.includes('search') || t.includes('find') || t.includes('look')) return 'search';
+      return 'step';
+    }
+
+    function createStepCard(desc, level, time) {
+      const el = document.createElement('div');
+      const stateClass = level === 'error' ? 'step-error' : level === 'warning' ? 'step-warning' : level === 'success' ? 'step-done' : '';
+      el.className = `step-card${stateClass ? ' ' + stateClass : ''}`;
+      const chip = inferActionChip(desc);
+      el.innerHTML = `
+        <div class="step-dot"></div>
+        <div class="step-body">
+          <div class="step-desc">${desc}</div>
+          <span class="step-action-chip">${chip}</span>
+        </div>
+        <span class="step-time">${time}</span>
+      `;
+      return el;
+    }
+
+    function createDownloadEventCard(msg, time) {
+      const el = document.createElement('div');
+      el.className = 'download-event-card';
+      const rawPath = msg.replace(/.*saved to\s*/i, '').replace(/.*file downloaded[:\s]*/i, '');
+      const filename = rawPath.split('/').pop() || rawPath;
+      const parsed = parseReportName(filename);
+      const displayName = parsed
+        ? parsed.name
+        : filename.replace(/\.[^.]+$/, '') || filename;
+      el.innerHTML = `
+        <div class="download-event-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <polyline points="7 15 12 20 17 15"></polyline>
+            <line x1="12" y1="20" x2="12" y2="10"></line>
+          </svg>
+        </div>
+        <div class="download-event-body">
+          <div class="download-event-label">File Saved</div>
+          <div class="download-event-name" title="${filename}">${displayName}</div>
+        </div>
+        <span class="download-event-time">${time}</span>
+      `;
+      return el;
+    }
+
+    function updateWorkflowProgress(workflowName, stepNum, totalSteps) {
+      const bar = document.getElementById('workflowProgress');
+      const nameEl = document.getElementById('progressWorkflow');
+      const stepEl = document.getElementById('progressStep');
+      const fill = document.getElementById('progressFill');
+      bar.style.display = 'block';
+      nameEl.textContent = workflowName;
+      if (totalSteps > 0) {
+        stepEl.textContent = `${stepNum} / ${totalSteps}`;
+        fill.style.width = `${Math.min(100, (stepNum / totalSteps) * 100)}%`;
+      } else {
+        stepEl.textContent = `step ${stepNum}`;
+        fill.style.width = `${Math.min(100, stepNum * 8)}%`;
+      }
+    }
+
+    function hideWorkflowProgress() {
+      const bar = document.getElementById('workflowProgress');
+      const fill = document.getElementById('progressFill');
+      fill.style.width = '100%';
+      setTimeout(() => { bar.style.display = 'none'; fill.style.width = '0%'; }, 600);
+    }
+
     function addActivityCard(data) {
       const empty = document.getElementById('activityEmpty');
       const feed = document.getElementById('activityFeed');
@@ -2553,19 +3076,25 @@
 
       switch (type) {
         case 'chain-start': {
+          workflowStepCount = 0;
+          currentWorkflowName = '';
           const workflows = msg.replace(/Starting workflow chain:\s*/i, '');
           el = createBanner('start', svgIcons.zap, 'Workflow Chain Started', workflows, time);
           break;
         }
         case 'workflow-start': {
-          const name = msg.replace(/Running workflow \d+\/\d+:\s*/i, '').replace(/_/g, ' ');
-          el = createBanner('start', svgIcons.play, `Running: ${name}`, null, time);
+          workflowStepCount = 0;
+          currentWorkflowName = msg.replace(/Running workflow \d+\/\d+:\s*/i, '').replace(/_/g, ' ');
+          updateWorkflowProgress(currentWorkflowName, 0, 0);
+          el = createBanner('start', svgIcons.play, `Running: ${currentWorkflowName}`, null, time);
           break;
         }
         case 'chain-end':
+          hideWorkflowProgress();
           el = createBanner('success', svgIcons.check, 'Workflow Chain Finished', null, time);
           break;
         case 'all-complete':
+          hideWorkflowProgress();
           el = createBanner('success', svgIcons.check, 'All Workflows Completed', null, time);
           break;
         case 'client-complete': {
@@ -2574,6 +3103,7 @@
           break;
         }
         case 'client-start': {
+          workflowStepCount = 0;
           const info = msg.replace(/Processing client\s*/i, '');
           el = createBanner('client', svgIcons.user, 'Processing Client', info, time);
           break;
@@ -2583,9 +3113,22 @@
           el = createBanner('report', svgIcons.file, 'Report Generated', path, time);
           break;
         }
+        case 'download-complete':
+          el = createDownloadEventCard(msg, time);
+          break;
         case 'fatal-error':
+          hideWorkflowProgress();
           el = createBanner('error', svgIcons.x, msg, null, time);
           break;
+        case 'step': {
+          const desc = msg.replace(/^\s*\u25b6\s*/, '').trim();
+          workflowStepCount++;
+          if (currentWorkflowName) {
+            updateWorkflowProgress(currentWorkflowName, workflowStepCount, 0);
+          }
+          el = createStepCard(desc, level, time);
+          break;
+        }
         default:
           el = createLogEntry(level, msg, time, data.data);
           break;
@@ -2597,17 +3140,21 @@
       logCount++;
       document.getElementById('logCountBadge').textContent = logCount;
 
-      while (feed.children.length > 100) {
+      while (feed.children.length > 150) {
         feed.removeChild(feed.lastChild);
       }
     }
 
     function clearActivity() {
       logCount = 0;
+      workflowStepCount = 0;
+      currentWorkflowName = '';
       document.getElementById('activityFeed').innerHTML = '';
       document.getElementById('activityFeed').style.display = 'none';
       document.getElementById('activityEmpty').style.display = 'flex';
       document.getElementById('logCountBadge').textContent = '0';
+      document.getElementById('workflowProgress').style.display = 'none';
+      document.getElementById('progressFill').style.width = '0%';
     }
 
     // Browser Frame
@@ -2737,92 +3284,186 @@
       `).join('');
     }
 
-    // Downloads
+    const REPORT_CODES = {
+      'TB': 'Trial Balance',
+      'P&L': 'Profit & Loss',
+      'AR': 'Aged Receivables',
+      'AP': 'Aged Payables',
+      'AT': 'Account Transactions',
+      'RID': 'Receivable Invoice Detail',
+      'PID': 'Payable Invoice Detail',
+      'VAT': 'VAT Returns'
+    };
+
+    function parseReportName(filename) {
+      const oldMatch = filename.match(/^(\d+)\s+([A-Z&]+)_(.+?)_(\d{2}-\w{3}-\d{4})_[\d-]+(\.\w+)$/);
+      if (oldMatch) return { number: oldMatch[1], code: oldMatch[2], name: oldMatch[3].replace(/_/g, ' '), ext: oldMatch[5] };
+      const newMatch = filename.match(/^(\d+)\s+(.+?)(\.\w+)$/);
+      if (newMatch) return { number: newMatch[1], code: null, name: newMatch[2].replace(/_/g, ' '), ext: newMatch[3] };
+      return null;
+    }
+
+    function getFileIconSvg(typeClass) {
+      if (typeClass === 'type-folder') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>`;
+      }
+      if (typeClass === 'type-xlsx') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="8" y1="13" x2="16" y2="13"></line>
+          <line x1="8" y1="17" x2="16" y2="17"></line>
+        </svg>`;
+      }
+      if (typeClass === 'type-pdf') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="9" y1="15" x2="15" y2="15"></line>
+        </svg>`;
+      }
+      if (typeClass === 'type-zip') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10H3M21 10V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10M21 10V8l-3-5H6L3 8v2M12 12v8M12 12h2M12 20h2"></path>
+        </svg>`;
+      }
+      if (typeClass === 'type-html') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>`;
+      }
+      if (typeClass === 'type-docx') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="8" y1="13" x2="16" y2="13"></line>
+          <line x1="8" y1="17" x2="12" y2="17"></line>
+        </svg>`;
+      }
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+      </svg>`;
+    }
+
+    function getTypeClass(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const map = { xlsx: 'type-xlsx', xls: 'type-xlsx', pdf: 'type-pdf', docx: 'type-docx', doc: 'type-docx', html: 'type-html', htm: 'type-html', zip: 'type-zip' };
+      return map[ext] || 'type-file';
+    }
+
+    function relativeTime(ts) {
+      const diff = Math.floor((Date.now() / 1000) - ts);
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+      return `${Math.floor(diff / 604800)}w ago`;
+    }
+
+    function buildBreadcrumb(subpath) {
+      const breadcrumb = document.getElementById('downloadsBreadcrumb');
+      const chevron = `<span class="breadcrumb-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></span>`;
+
+      let html = `<span class="breadcrumb-segment" onclick="loadDownloads('')">Downloads</span>`;
+
+      if (subpath) {
+        const parts = subpath.split('/').filter(Boolean);
+        parts.forEach((part, i) => {
+          const partPath = parts.slice(0, i + 1).join('/');
+          const isLast = i === parts.length - 1;
+          html += chevron;
+          if (isLast) {
+            html += `<span class="breadcrumb-segment active" title="${part}">${part}</span>`;
+          } else {
+            html += `<span class="breadcrumb-segment" onclick="loadDownloads('${partPath}')" title="${part}">${part}</span>`;
+          }
+        });
+      } else {
+        html = `<span class="breadcrumb-segment active">Downloads</span>`;
+      }
+
+      breadcrumb.innerHTML = html;
+    }
+
     async function loadDownloads(subpath = '') {
       try {
         const url = subpath ? `/api/downloads?subpath=${encodeURIComponent(subpath)}` : '/api/downloads';
         const response = await fetch(url);
         const data = await response.json();
         const list = document.getElementById('downloadsList');
-        const pathEl = document.getElementById('downloadsPath');
+        const summaryEl = document.getElementById('downloadsSummary');
+        const summaryRow = document.getElementById('downloadsSummaryRow');
 
         currentDownloadPath = data.subpath || '';
-        pathEl.textContent = data.subpath ? `${data.path}/${data.subpath}` : data.path;
+        buildBreadcrumb(currentDownloadPath);
 
-        let html = '';
-
-        if (data.parent !== null && data.parent !== undefined) {
-          html += `
-            <div class="download-item" onclick="loadDownloads('${data.parent === '.' ? '' : data.parent}')">
-              <div class="download-icon folder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-              </div>
-              <div class="download-info">
-                <div class="download-name">..</div>
-                <div class="download-meta">Go back</div>
-              </div>
-            </div>
-          `;
-        }
-
-        if (data.items.length === 0 && !data.parent) {
+        if (data.items.length === 0) {
+          summaryRow.style.display = 'none';
           list.innerHTML = '<div class="downloads-empty">No files yet</div>';
           return;
         }
 
-        html += data.items.map(item => {
+        const folderCount = data.items.filter(i => i.type === 'folder').length;
+        const fileCount = data.items.filter(i => i.type === 'file').length;
+        const parts = [];
+        if (folderCount) parts.push(`${folderCount} folder${folderCount !== 1 ? 's' : ''}`);
+        if (fileCount) parts.push(`${fileCount} file${fileCount !== 1 ? 's' : ''}`);
+        summaryEl.textContent = parts.join(', ');
+        summaryRow.style.display = 'flex';
+
+        const deleteIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+        const eyeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+
+        const html = data.items.map(item => {
           if (item.type === 'folder') {
+            const escapedPath = item.path.replace(/'/g, "\\'");
             return `
-              <div class="download-item" onclick="loadDownloads('${item.path}')">
-                <div class="download-icon folder">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                  </svg>
-                </div>
+              <div class="download-item" onclick="loadDownloads('${escapedPath}')">
+                <div class="download-icon type-folder">${getFileIconSvg('type-folder')}</div>
                 <div class="download-info">
-                  <div class="download-name">${item.name}</div>
+                  <div class="download-name-row">
+                    <div class="download-name">${item.name}</div>
+                  </div>
                   <div class="download-meta">${item.file_count} file${item.file_count !== 1 ? 's' : ''}</div>
                 </div>
                 <div class="download-actions">
-                  <button class="action-btn delete" onclick="event.stopPropagation(); deleteFile('${item.path}')" title="Delete">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                  </button>
+                  <button class="action-btn delete" onclick="event.stopPropagation(); deleteFile('${escapedPath}')" title="Delete">${deleteIcon}</button>
                 </div>
               </div>
             `;
           } else {
             const escapedPath = item.path.replace(/'/g, "\\'");
             const escapedName = item.name.replace(/'/g, "\\'");
+            const typeClass = getTypeClass(item.name);
+            const parsed = parseReportName(item.name);
+            const badge = parsed && parsed.number
+              ? `<span class="report-badge">#${parsed.number}</span>`
+              : '';
+            const displayName = parsed
+              ? parsed.name
+              : item.name.replace(/\.[^.]+$/, '');
+            const metaTime = item.modified ? relativeTime(item.modified) : '';
+            const metaSize = formatFileSize(item.size);
             return `
               <div class="download-item">
-                <div class="download-icon file">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                  </svg>
-                </div>
+                <div class="download-icon ${typeClass}">${getFileIconSvg(typeClass)}</div>
                 <div class="download-info">
-                  <div class="download-name-link" onclick="openPreview('${escapedPath}', '${escapedName}')">${item.name}</div>
-                  <div class="download-meta">${formatFileSize(item.size)}</div>
+                  <div class="download-name-row">
+                    ${badge}
+                    <div class="download-name-link" onclick="openPreview('${escapedPath}', '${escapedName}')" title="${item.name}">${displayName}</div>
+                  </div>
+                  <div class="download-meta">
+                    <span>${metaSize}</span>
+                    ${metaTime ? `<span class="download-meta-sep">·</span><span>${metaTime}</span>` : ''}
+                  </div>
                 </div>
                 <div class="download-actions">
-                  <button class="action-btn" onclick="openPreview('${escapedPath}', '${escapedName}')" title="Preview">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  </button>
-                  <button class="action-btn delete" onclick="deleteFile('${item.path}')" title="Delete">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                  </button>
+                  <button class="action-btn" onclick="openPreview('${escapedPath}', '${escapedName}')" title="Preview">${eyeIcon}</button>
+                  <button class="action-btn delete" onclick="deleteFile('${escapedPath}')" title="Delete">${deleteIcon}</button>
                 </div>
               </div>
             `;
@@ -2851,7 +3492,54 @@
       openPreview(filePath, fileName);
     }
 
-    function openPreview(filePath, fileName) {
+    function closePreview() {
+      const overlay = document.getElementById('previewOverlay');
+      const body = document.getElementById('previewBody');
+      overlay.classList.remove('active');
+      body.innerHTML = '';
+    }
+
+    async function deleteFile(filePath) {
+      if (!confirm(`Delete "${filePath}"?`)) return;
+
+      try {
+        const response = await fetch(`/api/downloads/${encodeURIComponent(filePath)}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (result.success) {
+          loadDownloads(currentDownloadPath);
+        } else {
+          alert(`Failed to delete: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Failed to delete:', error);
+      }
+    }
+
+    async function clearAllDownloads() {
+      if (!confirm('Clear all downloaded files? This cannot be undone.')) return;
+      try {
+        const response = await fetch('/api/downloads', { method: 'DELETE' });
+        const result = await response.json();
+        if (result.success) {
+          loadDownloads('');
+        } else {
+          alert(`Failed to clear: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Failed to clear downloads:', error);
+      }
+    }
+
+    function downloadAllAsZip() {
+      window.open('/api/downloads/zip', '_blank');
+    }
+
+    async function openPreview(filePath, fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      if (ext === 'xlsx' || ext === 'xls') {
+        await openExcelPreview(filePath, fileName);
+        return;
+      }
       const overlay = document.getElementById('previewOverlay');
       const body = document.getElementById('previewBody');
       const nameEl = document.getElementById('previewFileName');
@@ -2860,9 +3548,6 @@
 
       nameEl.textContent = fileName;
       downloadBtn.onclick = () => window.open(fileUrl, '_blank');
-
-      const ext = fileName.split('.').pop().toLowerCase();
-
       body.innerHTML = '';
 
       if (ext === 'html' || ext === 'pdf') {
@@ -2885,42 +3570,71 @@
             </div>
             <p>No preview available</p>
             <span>${fileName}</span>
-            <button class="preview-download-btn" onclick="window.open('${fileUrl}', '_blank')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Download File
-            </button>
           </div>
         `;
       }
-
       overlay.classList.add('active');
     }
 
-    function closePreview() {
+    async function openExcelPreview(filePath, fileName) {
       const overlay = document.getElementById('previewOverlay');
       const body = document.getElementById('previewBody');
-      overlay.classList.remove('active');
-      body.innerHTML = '';
-    }
+      const nameEl = document.getElementById('previewFileName');
+      const downloadBtn = document.getElementById('previewDownloadBtn');
+      const fileUrl = `/api/downloads/view/${encodeURIComponent(filePath)}`;
 
-    async function deleteFile(filePath) {
-      if (!confirm(`Delete "${filePath}"?`)) return;
+      nameEl.textContent = fileName;
+      downloadBtn.onclick = () => window.open(fileUrl, '_blank');
+      body.innerHTML = '<div style="padding:40px;color:var(--text-muted);">Loading spreadsheet...</div>';
+      overlay.classList.add('active');
 
       try {
-        const response = await fetch(`/api/downloads/${encodeURIComponent(filePath)}`, { method: 'DELETE' });
-        const result = await response.json();
-        if (result.success) {
-          loadDownloads(currentDownloadPath);
-        } else {
-          alert(`Failed to delete: ${result.error}`);
+        const response = await fetch(`/api/downloads/preview/${encodeURIComponent(filePath)}`);
+        const data = await response.json();
+        if (data.error) {
+          body.innerHTML = `<div class="preview-no-preview"><p>${data.error}</p></div>`;
+          return;
         }
-      } catch (error) {
-        console.error('Failed to delete:', error);
+
+        const sheetNames = Object.keys(data.sheets);
+        let html = '';
+        if (sheetNames.length > 1) {
+          html += '<div class="excel-sheet-tabs" id="excelSheetTabs">';
+          sheetNames.forEach((name, i) => {
+            html += `<button class="excel-sheet-tab ${i === 0 ? 'active' : ''}" onclick="switchExcelSheet('${name.replace(/'/g, "\\'")}')">${name}</button>`;
+          });
+          html += '</div>';
+        }
+        html += '<div id="excelSheetContent" style="flex:1;overflow:auto;"></div>';
+        body.innerHTML = html;
+        body.style.flexDirection = 'column';
+        body.style.alignItems = 'stretch';
+        window._excelSheets = data.sheets;
+        switchExcelSheet(sheetNames[0]);
+      } catch (err) {
+        body.innerHTML = `<div class="preview-no-preview"><p>Failed to load preview</p></div>`;
       }
+    }
+
+    function switchExcelSheet(sheetName) {
+      const rows = window._excelSheets[sheetName];
+      if (!rows || rows.length === 0) {
+        document.getElementById('excelSheetContent').innerHTML = '<div style="padding:20px;color:var(--text-muted);">Empty sheet</div>';
+        return;
+      }
+      document.querySelectorAll('.excel-sheet-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.textContent === sheetName);
+      });
+      let tableHtml = '<table class="excel-preview-table"><thead><tr>';
+      rows[0].forEach(cell => { tableHtml += `<th>${cell}</th>`; });
+      tableHtml += '</tr></thead><tbody>';
+      for (let i = 1; i < rows.length; i++) {
+        tableHtml += '<tr>';
+        rows[i].forEach(cell => { tableHtml += `<td title="${cell}">${cell}</td>`; });
+        tableHtml += '</tr>';
+      }
+      tableHtml += '</tbody></table>';
+      document.getElementById('excelSheetContent').innerHTML = tableHtml;
     }
 
     // Drag and drop for upload

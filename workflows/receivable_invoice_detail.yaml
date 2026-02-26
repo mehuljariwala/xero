@@ -62,18 +62,18 @@ steps:
     action: wait_for_selector
     description: Wait for date options dropdown to appear
     selectors:
-      - "[data-automationid='report-settings-date-option-End of last financial year']"
-      - "[role='option']:has-text('End of last financial year')"
+      - "[data-automationid='report-settings-date-option-Last financial year']"
+      - "[role='option']:has-text('Last financial year')"
     timeout: 5000
     wait_after: 500
 
-  - id: select_end_of_last_financial_year
+  - id: select_last_financial_year
     action: click
-    description: Select 'End of last financial year' from dropdown
+    description: Select 'Last financial year' from dropdown
     selectors:
-      - "[data-automationid='report-settings-date-option-End of last financial year']"
-      - "[role='option']:has-text('End of last financial year')"
-      - "li:has-text('End of last financial year')"
+      - "[data-automationid='report-settings-date-option-Last financial year']"
+      - "[role='option']:has-text('Last financial year')"
+      - "li:has-text('Last financial year')"
     wait_after: 500
 
   - id: read_report_end_date

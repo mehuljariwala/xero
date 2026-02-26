@@ -175,6 +175,68 @@ async def delete_file(file_path: str):
         return {"error": str(e), "success": False}
 
 
+@app.delete("/api/downloads")
+async def clear_all_downloads():
+    import shutil
+    downloads_dir = Path("downloads")
+    deleted = 0
+    try:
+        for item in downloads_dir.iterdir():
+            if item.is_dir():
+                shutil.rmtree(item)
+            else:
+                item.unlink()
+            deleted += 1
+        return {"success": True, "deleted": deleted}
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
+@app.get("/api/downloads/zip")
+async def download_all_as_zip():
+    import zipfile
+    import tempfile
+    from fastapi.responses import FileResponse
+    downloads_dir = Path("downloads")
+    files = list(downloads_dir.rglob("*"))
+    files = [f for f in files if f.is_file()]
+    if not files:
+        return {"error": "No files to download"}
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+    with zipfile.ZipFile(tmp.name, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for f in files:
+            zf.write(f, f.relative_to(downloads_dir))
+    return FileResponse(tmp.name, filename="xero_reports.zip", media_type="application/zip")
+
+
+@app.get("/api/downloads/preview/{file_path:path}")
+async def preview_excel(file_path: str):
+    downloads_dir = Path("downloads")
+    full_path = downloads_dir / file_path
+    if not full_path.exists() or not full_path.is_file():
+        return {"error": "File not found"}
+    ext = full_path.suffix.lower()
+    if ext not in ('.xlsx', '.xls'):
+        return {"error": "Not an Excel file"}
+    try:
+        import openpyxl
+        wb = openpyxl.load_workbook(full_path, read_only=True, data_only=True)
+        sheets = {}
+        for name in wb.sheetnames:
+            ws = wb[name]
+            rows = []
+            for row in ws.iter_rows(values_only=True):
+                rows.append([str(cell) if cell is not None else "" for cell in row])
+                if len(rows) >= 200:
+                    break
+            sheets[name] = rows
+        wb.close()
+        return {"sheets": sheets, "filename": full_path.name}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 class CredentialsInput(BaseModel):
     email: str
     password: str
@@ -309,10 +371,10 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
         if log_handler.screencast_enabled and workflow_running:
             frame_data = params.get("data", "")
             session_id = params.get("sessionId", 0)
-            await log_handler.broadcast_frame(frame_data)
+            asyncio.create_task(log_handler.broadcast_frame(frame_data))
             if cdp_session:
                 try:
-                    await cdp_session.send("Page.screencastFrameAck", {"sessionId": session_id})
+                    asyncio.create_task(cdp_session.send("Page.screencastFrameAck", {"sessionId": session_id}))
                 except Exception:
                     pass
 
@@ -331,6 +393,13 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
             args=[
                 "--no-sandbox",
                 "--disable-blink-features=AutomationControlled",
+                "--enable-gpu-rasterization",
+                "--enable-zero-copy",
+                "--disable-background-timer-throttling",
+                "--disable-renderer-backgrounding",
+                "--disable-backgrounding-occluded-windows",
+                "--disable-ipc-flooding-protection",
+                "--enable-features=NetworkService,NetworkServiceInProcess",
             ],
             user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         )
@@ -343,15 +412,7 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
                 "downloadPath": str(downloads_dir),
                 "eventsEnabled": True
             })
-            cdp_session.on("Page.screencastFrame", lambda params: asyncio.create_task(handle_screencast_frame(params)))
-            await cdp_session.send("Page.startScreencast", {
-                "format": "jpeg",
-                "quality": 60,
-                "maxWidth": 1280,
-                "maxHeight": 800,
-                "everyNthFrame": 2
-            })
-            await send_log("info", "Browser streaming started")
+            await send_log("info", "Browser connected")
         except Exception as e:
             await send_log("warning", f"Screencast/CDP setup: {str(e)}")
 
