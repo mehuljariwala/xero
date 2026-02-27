@@ -2703,7 +2703,7 @@
         return `
           <div class="client-item" id="client-${index}">
             <div class="client-header" onclick="toggleClient(${index})">
-              <input type="checkbox" class="client-checkbox" data-client="${client}" checked onclick="event.stopPropagation()">
+              <input type="checkbox" class="client-checkbox" data-client="${client}" checked onclick="event.stopPropagation(); toggleClientReports(${index}, this.checked)">
               <div class="client-avatar" style="background: linear-gradient(135deg, ${color}, ${color}88);">${initials}</div>
               <div class="client-info">
                 <div class="client-name">${client}</div>
@@ -2722,7 +2722,7 @@
               </button>
               ${availableReports.map(report => `
                 <label class="report-item">
-                  <input type="checkbox" data-client="${client}" data-report="${report.id}" checked onchange="updateToggleLabel(${index})">
+                  <input type="checkbox" data-client="${client}" data-report="${report.id}" checked onchange="syncClientCheckbox(${index}); updateToggleLabel(${index})">
                   <span>${report.name}</span>
                 </label>
               `).join('')}
@@ -2739,12 +2739,26 @@
       reports.classList.toggle('visible');
     }
 
+    function toggleClientReports(clientIndex, checked) {
+      const container = document.getElementById(`reports-${clientIndex}`);
+      container.querySelectorAll('.report-item input').forEach(cb => cb.checked = checked);
+      updateToggleLabel(clientIndex);
+    }
+
     function toggleAllReports(clientIndex) {
       const container = document.getElementById(`reports-${clientIndex}`);
       const checkboxes = container.querySelectorAll('.report-item input');
       const allChecked = Array.from(checkboxes).every(cb => cb.checked);
       checkboxes.forEach(cb => cb.checked = !allChecked);
+      syncClientCheckbox(clientIndex);
       updateToggleLabel(clientIndex);
+    }
+
+    function syncClientCheckbox(clientIndex) {
+      const container = document.getElementById(`reports-${clientIndex}`);
+      const checkboxes = container.querySelectorAll('.report-item input');
+      const clientCb = document.querySelector(`#client-${clientIndex} .client-checkbox`);
+      if (clientCb) clientCb.checked = Array.from(checkboxes).some(cb => cb.checked);
     }
 
     function updateToggleLabel(clientIndex) {
@@ -3417,6 +3431,7 @@
 
         const deleteIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
         const eyeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+        const dlIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
 
         const html = data.items.map(item => {
           if (item.type === 'folder') {
@@ -3463,6 +3478,7 @@
                 </div>
                 <div class="download-actions">
                   <button class="action-btn" onclick="openPreview('${escapedPath}', '${escapedName}')" title="Preview">${eyeIcon}</button>
+                  <a class="action-btn" href="/api/downloads/view/${item.path}" download="${item.name}" title="Download">${dlIcon}</a>
                   <button class="action-btn delete" onclick="deleteFile('${escapedPath}')" title="Delete">${deleteIcon}</button>
                 </div>
               </div>

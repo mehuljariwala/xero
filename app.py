@@ -407,14 +407,9 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
 
         try:
             cdp_session = await page.context.new_cdp_session(page)
-            await cdp_session.send("Browser.setDownloadBehavior", {
-                "behavior": "allow",
-                "downloadPath": str(downloads_dir),
-                "eventsEnabled": True
-            })
             await send_log("info", "Browser connected")
         except Exception as e:
-            await send_log("warning", f"Screencast/CDP setup: {str(e)}")
+            await send_log("warning", f"CDP setup: {str(e)}")
 
         clients_to_process = clients if clients else [None]
 
@@ -458,22 +453,12 @@ async def run_workflow_chain(workflow_names: list[str], clients: list[str] = Non
                     page = new_page
                     try:
                         if cdp_session:
-                            await cdp_session.send("Page.stopScreencast")
+                            try:
+                                await cdp_session.send("Page.stopScreencast")
+                            except Exception:
+                                pass
                         cdp_session = await page.context.new_cdp_session(page)
-                        await cdp_session.send("Browser.setDownloadBehavior", {
-                            "behavior": "allow",
-                            "downloadPath": str(downloads_dir),
-                            "eventsEnabled": True
-                        })
-                        cdp_session.on("Page.screencastFrame", lambda params: asyncio.create_task(handle_screencast_frame(params)))
-                        await cdp_session.send("Page.startScreencast", {
-                            "format": "jpeg",
-                            "quality": 60,
-                            "maxWidth": 1280,
-                            "maxHeight": 800,
-                            "everyNthFrame": 2
-                        })
-                        await send_log("info", "Screencast re-attached to new tab")
+                        await send_log("info", "CDP session re-attached to new tab")
                     except Exception as e:
                         await send_log("warning", f"Screencast re-attach failed: {str(e)}")
                 master_report.events.extend(engine.report.events)

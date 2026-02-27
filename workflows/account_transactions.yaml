@@ -73,25 +73,23 @@ steps:
     selectors:
       - "[data-automationid='report-settings-convenience-date-dropdown-button']"
       - "button[aria-label='List of convenience dates']"
-    wait_after: 800
+    wait_after: 1500
 
   - id: wait_for_date_options
     action: wait_for_selector
-    description: Wait for date options dropdown to appear
+    description: Wait for date options dropdown to fully render
     selectors:
       - "[data-automationid='report-settings-date-option-Last financial year']"
-      - "[role='option']:has-text('Last financial year')"
     timeout: 5000
-    wait_after: 500
+    wait_after: 1000
 
   - id: select_last_financial_year
     action: click
     description: Select 'Last financial year' from dropdown
     selectors:
+      - "[data-automationid='report-settings-date-option-Last financial year--body']"
       - "[data-automationid='report-settings-date-option-Last financial year']"
-      - "[role='option']:has-text('Last financial year')"
-      - "li:has-text('Last financial year')"
-    wait_after: 500
+    wait_after: 1000
 
   - id: click_columns_dropdown
     action: click

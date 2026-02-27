@@ -254,6 +254,8 @@ class WorkflowEngine:
                 resolved_selector = self._resolve_variable(selector)
                 element = self._page.locator(resolved_selector).first
                 if await element.is_visible(timeout=5000):
+                    await element.scroll_into_view_if_needed(timeout=3000)
+                    await asyncio.sleep(0.2)
                     if step.get('expect_popup') or step.get('expect_new_tab'):
                         async with self._page.context.expect_page(timeout=10000) as new_page_info:
                             await element.click()
@@ -1131,8 +1133,8 @@ class WorkflowEngine:
         num_prefix, report_name, is_vat = self._get_report_prefix(workflow_name)
         safe_company = re.sub(r'[<>:"/\\|?*]', '', company_name) if company_name else 'Unknown'
 
-        date_folder = datetime.now().strftime('%d-%b-%Y')
-        client_folder = f"{date_folder}/{safe_company}"
+        date_folder = datetime.now().strftime('%d-%b-%Y %I:%M %p')
+        client_folder = f"{safe_company}/{date_folder}"
         subfolder = "VAT" if is_vat else ""
 
         if is_vat:
